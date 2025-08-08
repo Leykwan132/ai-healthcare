@@ -1,12 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
-
-const queryParamsSchema = z.object({
-  isCompleted: z.enum(['true', 'false']).optional(),
-  limit: z.coerce.number().int().positive().max(100).default(10),
-  offset: z.coerce.number().int().nonnegative().default(0),
-});
 
 export async function GET(
   request: Request,
@@ -14,42 +7,12 @@ export async function GET(
 ) {
   const { patientId } = await params;
   try {
-    const { searchParams } = new URL(request.url);
     const supabase = await createClient();
-
-    // Validate query parameters
-    const queryParams = {
-      isCompleted: searchParams.get('isCompleted'),
-      limit: searchParams.get('limit'),
-      offset: searchParams.get('offset'),
-    };
-
-    const validation = queryParamsSchema.safeParse(queryParams);
-
-    if (!validation.success) {
-      return NextResponse.json(
-        { error: 'Invalid query parameters', details: validation.error.issues },
-        { status: 400 }
-      );
-    }
-
-    const { isCompleted, limit, offset } = validation.data;
-
-    // Build the query
-    let query = supabase
+    const { data: tasks, error, status } = await supabase
       .from('tasks')
-      .select('*', { count: 'exact' })
+      .select('*')
       .eq('patientId', patientId)
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1);
-
-    // Add isCompleted filter if provided
-    if (isCompleted) {
-      query = query.eq('isCompleted', isCompleted === 'true');
-    }
-
-    // Execute the query
-    const { data: tasks, error, count } = await query;
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching tasks:', error);
@@ -61,12 +24,6 @@ export async function GET(
 
     return NextResponse.json({
       data: tasks || [],
-      pagination: {
-        total: count || 0,
-        limit,
-        offset,
-        hasMore: count ? offset + (tasks?.length || 0) < count : false,
-      },
     });
 
   } catch (error) {
