@@ -1,4 +1,5 @@
-import Link from "next/link";
+"use client";
+
 import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default function Home() {
@@ -37,17 +38,23 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row gap-4 mt-8">
           <div className="flex flex-col sm:flex-row gap-6 mt-8">
-            <Link href="/schedule-planning">
-              <button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500 transition px-6 py-3 rounded-xl text-lg font-semibold shadow-lg">
-                Doctor
-              </button>
-            </Link>
+            <button
+              onClick={() => {
+                window.location.href = "/schedule-planning";
+              }}
+              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500 transition px-6 py-3 rounded-xl text-lg font-semibold shadow-lg"
+            >
+              Doctor
+            </button>
 
-            <Link href="/home">
-              <button className="bg-green-600 hover:bg-green-700 dark:bg-green-400 dark:hover:bg-green-500 transition px-6 py-3 rounded-xl text-lg font-semibold shadow-lg">
-                Patient
-              </button>
-            </Link>
+            <button
+              onClick={() => {
+                window.location.href = "/home";
+              }}
+              className="bg-green-600 hover:bg-green-700 dark:bg-green-400 dark:hover:bg-green-500 transition px-6 py-3 rounded-xl text-lg font-semibold shadow-lg"
+            >
+              Patient
+            </button>
           </div>
         </div>
       </div>
