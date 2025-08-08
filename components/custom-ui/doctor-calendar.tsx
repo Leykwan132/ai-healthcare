@@ -41,7 +41,7 @@ export function CalendarView({ onSelectEvent }: { onSelectEvent: (event: any) =>
   // useEffect(() => {
   //   const fetchEvents = async () => {
   //     try {
-  //       const res = await axios.get("/api/events");
+  //       const res = await axios.get("/api/fetchCalendarData");
 
   //       const parsed = res.data.map((event: any) => ({
   //         ...event,
