@@ -4,7 +4,7 @@
 
 import { useState } from "react";
 import { PromptChatBox } from "@/components/custom-ui/prompt-chat-box";
-import { CalendarView } from "@/components/custom-ui/patient-calendar";
+import { CalendarView } from "@/components/custom-ui/doctor-calendar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
