@@ -5,40 +5,36 @@ import { LogoutButton } from "../logout-button";
 
 export async function DoctorTopNavBar() {
   const supabase = await createClient();
-
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims as { email?: string } | undefined;
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <header className="fixed top-0 left-0 w-full h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 z-50 flex justify-between items-center">
+      {/* Left section (logo stays flush left) */}
+      <div className="flex items-center space-x-2 pl-4">
+        <Link href="/doctors" className="flex items-center space-x-2">
+          <img src="/logo.svg" alt="Logo" className="h-8 w-8" />
+          <span className="font-semibold">AI Healthcare</span>
+        </Link>
+      </div>
 
-          {/* Logo */}
-          <Link href="/doctors" className="flex items-center space-x-2">
-            <img src="/logo.svg" alt="Logo" className="h-8 w-8" />
-            <span className="flex gap-5 items-center font-semibold">AI Healthcare</span>
-          </Link>
-
-          {/* Right side */}
-          {user ? (
-            <div className="flex items-center gap-4">
-              <span className="text-sm">{user.email}!</span>
-
-              <LogoutButton />
-            </div>
-
-          ) : (
-            <div className="flex gap-2">
-              <Button asChild size="sm" variant="outline">
-                <Link href="/auth/login">Sign in</Link>
-              </Button>
-              <Button asChild size="sm" variant="default">
-                <Link href="/auth/sign-up">Sign up</Link>
-              </Button>
-            </div>
-          )}
-        </div>
+      {/* Right section (shifted for sidebar space) */}
+      <div className="flex items-center gap-4 pr-4" style={{ paddingLeft: "200px" }}>
+        {user ? (
+          <>
+            <span className="text-sm">{user.email}</span>
+            <LogoutButton />
+          </>
+        ) : (
+          <div className="flex gap-2">
+            <Button asChild size="sm" variant="outline">
+              <Link href="/auth/login">Sign in</Link>
+            </Button>
+            <Button asChild size="sm" variant="default">
+              <Link href="/auth/sign-up">Sign up</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </header>
   );
