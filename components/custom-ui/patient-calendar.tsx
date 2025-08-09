@@ -6,6 +6,7 @@ import moment from "moment";
 import axios from "axios";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { PatientEventModal } from "./patient-event-modal";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
@@ -34,8 +35,56 @@ const sampleEvents = [
 ];
 
 
-export function CalendarView({ onSelectEvent }: { onSelectEvent: (event: any) => void }) {
-  const [events] = useState(sampleEvents);  // hard-code
+
+interface CalendarViewProps {
+  events?: any[];
+  loggedEvents?: Record<number, { isLogged: boolean; photo?: string; timestamp?: string }>;
+  onLogMedication?: (eventId: number, photo: File) => void;
+  onEventClick?: (event: any) => void;
+}
+
+export function CalendarView({
+  events: eventsProp,
+  loggedEvents: loggedEventsProp,
+  onLogMedication: onLogMedicationProp,
+  onEventClick
+}: CalendarViewProps = {}) {
+  const [events] = useState(eventsProp || sampleEvents);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loggedEvents, setLoggedEvents] = useState<Record<number, { isLogged: boolean; photo?: string; timestamp?: string }>>(loggedEventsProp || {});
+
+  // If using shared state, use the provided props, otherwise use local state
+  const effectiveLoggedEvents = loggedEventsProp !== undefined ? loggedEventsProp : loggedEvents;
+  const effectiveLogMedication = onLogMedicationProp !== undefined ? onLogMedicationProp : (eventId: number, photo: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const photoUrl = e.target?.result as string;
+      setLoggedEvents(prev => ({
+        ...prev,
+        [eventId]: {
+          isLogged: true,
+          photo: photoUrl,
+          timestamp: new Date().toISOString()
+        }
+      }));
+    };
+    reader.readAsDataURL(photo);
+  };
+
+  const handleSelectEvent = (event: any) => {
+    if (onEventClick) {
+      onEventClick(event);
+    } else {
+      setSelectedEvent(event);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(null);
+  };
 
   // const [events, setEvents] = useState<any[]>([]);
   // useEffect(() => {
@@ -59,23 +108,43 @@ export function CalendarView({ onSelectEvent }: { onSelectEvent: (event: any) =>
   // }, []);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl">Calendar</CardTitle>
-        <CardDescription>Not missing any meds!</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="h-[600px]">
-          <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            onSelectEvent={onSelectEvent}
-            style={{ height: "100%" }}
-          />
-        </div>
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">Calendar</CardTitle>
+          <CardDescription>Not missing any meds!</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[600px]">
+            <Calendar
+              localizer={localizer}
+              events={events}
+              startAccessor="start"
+              endAccessor="end"
+              onSelectEvent={handleSelectEvent}
+              style={{ height: "100%" }}
+              eventPropGetter={(event) => {
+                const isLogged = effectiveLoggedEvents[event.id]?.isLogged && effectiveLoggedEvents[event.id]?.photo;
+                return isLogged
+                  ? { style: { backgroundColor: '#bbf7d0', color: '#166534', borderRadius: 6, border: '1px solid #22c55e' } }
+                  : {};
+              }}
+            />
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Only show modal if not using external event click handler */}
+      {!onEventClick && (
+        <PatientEventModal
+          event={selectedEvent}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onLogMedication={effectiveLogMedication}
+          isEventLogged={selectedEvent ? effectiveLoggedEvents[selectedEvent.id]?.isLogged || false : false}
+          eventPhoto={selectedEvent ? effectiveLoggedEvents[selectedEvent.id]?.photo : undefined}
+        />
+      )}
+    </>
   );
 }
