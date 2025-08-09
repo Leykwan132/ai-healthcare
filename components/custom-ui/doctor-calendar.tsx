@@ -113,7 +113,7 @@ export function CalendarView({
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Only show modal if not using external event click handler */}
       {!onEventClick && (
         <DoctorEventModal

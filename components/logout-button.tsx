@@ -22,11 +22,11 @@ export function LogoutButton() {
   };
 
   const switchToDoctor = async () => {
-    window.location.href = "/doctors";
+    window.location.href = "/doctors/dashboard";
   };
 
   const switchToPatient = async () => {
-    window.location.href = "/patients";
+    window.location.href = "/patients/dashboard";
   };
 
   return (
