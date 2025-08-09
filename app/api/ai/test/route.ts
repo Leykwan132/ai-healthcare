@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
     if (provider && (provider === 'openai' || provider === 'groq')) {
       try {
         const testPrompt = 'Generate a simple greeting in one sentence.';
-        const completion = await createAICompletion(testPrompt, provider, provider === 'openai' ? 'gpt-4o-mini' : 'llama3-8b-8192', 0.7, 50);
+        const completion = await createAICompletion(testPrompt, provider, provider === 'openai' ? 'gpt-4o-mini' : 'llama-3.1-8b-instant', 0.7, 50);
         completionTest = {
           provider,
           prompt: testPrompt,

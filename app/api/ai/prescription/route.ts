@@ -7,6 +7,7 @@ const prescriptionRequestSchema = z.object({
   instruction: z.string().min(1, 'Instruction is required'),
   provider: z.enum(['openai', 'groq']).optional().default('openai'),
   language: z.enum(['en', 'ms']).optional().default('en'),
+  startDate: z.string().optional().default(new Date().toISOString().split('T')[0]), // YYYY-MM-DD format
   patientId: z.string().uuid().optional(),
   doctorId: z.string().uuid().optional(),
 });
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { instruction, provider, language, patientId, doctorId } = validation.data;
+    const { instruction, provider, language, startDate, patientId, doctorId } = validation.data;
 
     // Create the prompt for prescription parsing (matching database schema)
     const prompt = `You are a medical prescription parser. Analyze the provided prescription text and extract structured information.
@@ -120,7 +121,7 @@ Return ONLY the JSON object, no additional text.`;
     const response = await createAICompletion(
       prompt,
       provider as AIProvider,
-      provider === 'openai' ? 'gpt-4o-mini' : 'llama3-8b-8192',
+      provider === 'openai' ? 'gpt-4o-mini' : 'llama-3.1-8b-instant',
       0.3, // Lower temperature for more consistent parsing
       1500
     );
