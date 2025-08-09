@@ -7,6 +7,8 @@ import axios from "axios";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { PatientEventModal } from "./patient-event-modal";
+import { ReminderPopup } from "./reminder-popup";
+import { useEventReminders } from "../../hooks/useEventReminders";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
@@ -53,6 +55,20 @@ export function CalendarView({
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loggedEvents, setLoggedEvents] = useState<Record<number, { isLogged: boolean; photo?: string; timestamp?: string }>>(loggedEventsProp || {});
+
+  // Event reminder system
+  const {
+    activeReminder,
+    snoozeReminder,
+    markEventComplete,
+    dismissReminder,
+    completedEvents
+  } = useEventReminders({
+    events,
+    onReminderTriggered: (event) => {
+      console.log('Reminder triggered for:', event.title);
+    }
+  });
 
   // If using shared state, use the provided props, otherwise use local state
   const effectiveLoggedEvents = loggedEventsProp !== undefined ? loggedEventsProp : loggedEvents;
@@ -107,6 +123,23 @@ export function CalendarView({
   //   fetchEvents();
   // }, []);
 
+  const handleReminderProceed = () => {
+    if (activeReminder) {
+      // Snooze for 5 minutes to prevent retriggering while user logs medication
+      snoozeReminder(activeReminder.id, 5);
+      // Open the patient event modal for proper medication logging
+      setSelectedEvent(activeReminder);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleReminderDismiss = () => {
+    if (activeReminder) {
+      // Snooze for 5 minutes to prevent immediate retriggering
+      snoozeReminder(activeReminder.id, 5);
+    }
+  };
+
   return (
     <>
       <Card>
@@ -125,14 +158,25 @@ export function CalendarView({
               style={{ height: "100%" }}
               eventPropGetter={(event) => {
                 const isLogged = effectiveLoggedEvents[event.id]?.isLogged && effectiveLoggedEvents[event.id]?.photo;
-                return isLogged
-                  ? { style: { backgroundColor: '#bbf7d0', color: '#166534', borderRadius: 6, border: '1px solid #22c55e' } }
-                  : {};
+                const isCompleted = completedEvents.has(event.id);
+                if (isLogged || isCompleted) {
+                  return { style: { backgroundColor: '#bbf7d0', color: '#166534', borderRadius: 6, border: '1px solid #22c55e' } };
+                }
+                return {};
               }}
             />
           </div>
         </CardContent>
       </Card>
+      
+      {/* Reminder Popup */}
+      <ReminderPopup
+        event={activeReminder}
+        isOpen={!!activeReminder}
+        onClose={handleReminderDismiss}
+        onSnooze={(minutes) => snoozeReminder(activeReminder?.id, minutes)}
+        onProceed={handleReminderProceed}
+      />
       
       {/* Only show modal if not using external event click handler */}
       {!onEventClick && (
