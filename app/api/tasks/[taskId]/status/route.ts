@@ -4,7 +4,6 @@ import { z } from 'zod';
 
 const statusUpdateSchema = z.object({
   isCompleted: z.boolean(),
-  updatedBy: z.string(),
 });
 
 export async function PATCH(
@@ -13,9 +12,14 @@ export async function PATCH(
   const { taskId } = await params;
   try {
     const supabase = await createClient();
+    console.log('taskId', taskId);
 
+    console.log('request', request);
     // Validate request body
     const body = await request.json();
+    console.log(
+      body
+    )
     const validation = statusUpdateSchema.safeParse(body);
 
     if (!validation.success) {
@@ -25,7 +29,7 @@ export async function PATCH(
       );
     }
 
-    const { isCompleted, updatedBy } = validation.data;
+    const { isCompleted } = validation.data;
 
     // Verify the task exists
     const { data: task, error: taskError } = await supabase
@@ -46,8 +50,6 @@ export async function PATCH(
       .from('tasks')
       .update({
         isCompleted,
-        updated_at: new Date().toISOString(),
-        updated_by: updatedBy,
       })
       .eq('id', taskId)
       .select('*')
