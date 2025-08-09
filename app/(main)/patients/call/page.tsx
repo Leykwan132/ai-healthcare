@@ -7,7 +7,7 @@ export default function PatientCallPage() {
     <div>
       <CallInterface 
         patientName="Jane Smith"
-        doctorName="Dr. Johnson"
+        doctorName="MediBuddy"
         patientImage=""
         doctorImage=""
         callDirection="patient-to-doctor"
