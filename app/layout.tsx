@@ -14,7 +14,7 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "MediBuddyAI",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  description: "Smart, Friendly and Efficient for your doctor and patient",
 };
 
 const geistSans = Geist({
