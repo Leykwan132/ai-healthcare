@@ -47,7 +47,7 @@ export function validateGroqKey(): boolean {
 export async function createAICompletion(
   prompt: string,
   provider: AIProvider = 'openai',
-  model: string = provider === 'openai' ? 'gpt-4o-mini' : 'llama3-8b-8192',
+  model: string = provider === 'openai' ? 'gpt-4o-mini' : 'llama-3.1-8b-instant',
   temperature: number = 0.7,
   maxTokens: number = 1000
 ) {
@@ -102,7 +102,7 @@ export async function createOpenAICompletion(
 // Create Groq completion with retry logic
 export async function createGroqCompletion(
   prompt: string,
-  model: string = 'llama3-8b-8192',
+  model: string = 'llama-3.1-8b-instant',
   temperature: number = 0.7,
   maxTokens: number = 1000
 ) {
@@ -131,7 +131,7 @@ export async function createGroqCompletion(
 export async function createAIStream(
   messages: any[],
   provider: AIProvider = 'openai',
-  model: string = provider === 'openai' ? 'gpt-4o-mini' : 'llama3-8b-8192',
+  model: string = provider === 'openai' ? 'gpt-4o-mini' : 'llama-3.1-8b-instant',
   temperature: number = 0.7,
   maxTokens: number = 1000
 ) {
@@ -208,7 +208,7 @@ export async function createOpenAIStream(
 // Create Groq stream for chat completions with retry logic
 export async function createGroqStream(
   messages: any[],
-  model: string = 'llama3-8b-8192',
+  model: string = 'llama-3.1-8b-instant',
   temperature: number = 0.7,
   maxTokens: number = 1000
 ) {
@@ -271,7 +271,7 @@ export async function testGroqConnection(): Promise<boolean> {
     validateGroqKey();
     
     const result = await generateText({
-      model: groq('llama3-8b-8192'),
+      model: groq('llama-3.1-8b-instant'),
       prompt: 'Hello',
       maxOutputTokens: 5,
     });

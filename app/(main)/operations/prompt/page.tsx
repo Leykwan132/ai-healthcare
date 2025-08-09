@@ -30,6 +30,37 @@ interface ParsedInstruction {
   notes?: string;
 }
 
+interface CalendarEvent {
+  id: string;
+  title: string;
+  date: string; // YYYY-MM-DD
+  time: string; // HH:MM
+  type: 'medication' | 'activity' | 'followup';
+  description: string;
+  metadata: {
+    dosage?: string;
+    frequency?: string;
+    duration?: string;
+    instructions?: string;
+  };
+}
+
+interface ScheduleResponse {
+  success: boolean;
+  events: CalendarEvent[];
+  eventsByDate: Record<string, CalendarEvent[]>;
+  summary: {
+    totalEvents: number;
+    medicationEvents: number;
+    activityEvents: number;
+    followUpEvents: number;
+    dateRange: {
+      start: string;
+      end: string;
+    };
+  };
+}
+
 interface ParseResponse {
   success: boolean;
   data?: ParsedInstruction;
@@ -42,7 +73,9 @@ export default function PromptTestPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ParseResponse | null>(null);
+  const [schedule, setSchedule] = useState<ScheduleResponse | null>(null);
   const [provider, setProvider] = useState<'openai' | 'groq'>('openai');
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
 
   const samplePrescriptions = [
     "Take 1 tablet of Amlodipine 5mg once daily in the morning. Light exercise 30 minutes daily.",
@@ -109,9 +142,39 @@ export default function PromptTestPage() {
     setResult(null);
   };
 
+  const generateSchedule = async () => {
+    if (!result?.data) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch('/api/ai/schedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          parsedInstruction: result.data,
+          startDate: startDate
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setSchedule(data);
+      } else {
+        console.error('Failed to generate schedule:', data.error);
+      }
+    } catch (error) {
+      console.error('Schedule generation error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const clearAll = () => {
     setInput("");
     setResult(null);
+    setSchedule(null);
   };
 
   return (
@@ -136,17 +199,29 @@ export default function PromptTestPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="provider">AI Provider</Label>
-                <select
-                  id="provider"
-                  value={provider}
-                  onChange={(e) => setProvider(e.target.value as 'openai' | 'groq')}
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="openai">OpenAI (GPT-4o-mini)</option>
-                  <option value="groq">Groq (Llama3-8b-8192)</option>
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="provider">AI Provider</Label>
+                  <select
+                    id="provider"
+                    value={provider}
+                    onChange={(e) => setProvider(e.target.value as 'openai' | 'groq')}
+                    className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="openai">OpenAI (GPT-4o-mini)</option>
+                    <option value="groq">Groq (Llama-3.1-8B-Instant)</option>
+                  </select>
+                </div>
+                <div>
+                  <Label htmlFor="startDate">Start Date</Label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
               </div>
 
               <div>
@@ -307,6 +382,17 @@ export default function PromptTestPage() {
                             )}
                           </div>
                         )}
+
+                        {/* Generate Schedule Button */}
+                        <div className="border-t pt-4">
+                          <Button 
+                            onClick={generateSchedule}
+                            disabled={loading}
+                            className="w-full"
+                          >
+                            {loading ? "Generating Schedule..." : "Generate Calendar Schedule"}
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </>
@@ -338,6 +424,108 @@ export default function PromptTestPage() {
         </Card>
       </div>
 
+      {/* Calendar Schedule Section */}
+      {schedule && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Calendar Schedule</CardTitle>
+            <div className="text-sm text-muted-foreground">
+              Generated from start date: {startDate}
+            </div>
+          </CardHeader>
+          <CardContent>
+            {schedule.success ? (
+              <div className="space-y-6">
+                {/* Schedule Summary */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">Schedule Summary</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <div className="text-gray-600">Total Events:</div>
+                      <div className="font-mono font-semibold">{schedule.summary.totalEvents}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-600">Medications:</div>
+                      <div className="font-mono font-semibold text-blue-700">{schedule.summary.medicationEvents}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-600">Activities:</div>
+                      <div className="font-mono font-semibold text-green-700">{schedule.summary.activityEvents}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-600">Follow-ups:</div>
+                      <div className="font-mono font-semibold text-purple-700">{schedule.summary.followUpEvents}</div>
+                    </div>
+                  </div>
+                  <div className="mt-3 text-xs text-gray-600">
+                    Date Range: {schedule.summary.dateRange.start} to {schedule.summary.dateRange.end}
+                  </div>
+                </div>
+
+                {/* Events by Date */}
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3">Daily Schedule</h4>
+                  <div className="space-y-4">
+                    {Object.entries(schedule.eventsByDate).map(([date, events]) => (
+                      <div key={date} className="border border-gray-200 rounded-lg p-4">
+                        <h5 className="font-medium text-gray-900 mb-3">
+                          {new Date(date).toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </h5>
+                        <div className="space-y-2">
+                          {events.map((event) => (
+                            <div 
+                              key={event.id} 
+                              className={`p-3 rounded-lg border ${
+                                event.type === 'medication' ? 'bg-blue-50 border-blue-200' :
+                                event.type === 'activity' ? 'bg-green-50 border-green-200' :
+                                'bg-purple-50 border-purple-200'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <h6 className={`font-medium ${
+                                  event.type === 'medication' ? 'text-blue-900' :
+                                  event.type === 'activity' ? 'text-green-900' :
+                                  'text-purple-900'
+                                }`}>
+                                  {event.title}
+                                </h6>
+                                <span className="text-xs font-mono bg-white px-2 py-1 rounded border">
+                                  {event.time}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-700">{event.description}</p>
+                              {event.metadata.dosage && (
+                                <div className="mt-2 text-xs text-gray-600">
+                                  <span className="font-medium">Dosage:</span> {event.metadata.dosage}
+                                </div>
+                              )}
+                              {event.metadata.instructions && (
+                                <div className="mt-1 text-xs text-gray-600">
+                                  <span className="font-medium">Instructions:</span> {event.metadata.instructions}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-red-50 border border-red-200 rounded p-3">
+                <p className="text-red-800 text-sm font-medium">Failed to generate schedule</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Instructions Card */}
       <Card>
         <CardHeader>
@@ -349,9 +537,11 @@ export default function PromptTestPage() {
               <h4 className="font-medium text-gray-900 mb-2">Testing Steps:</h4>
               <ol className="list-decimal list-inside space-y-1 text-gray-600">
                 <li>Select an AI provider (OpenAI or Groq)</li>
+                <li>Set a start date for the schedule</li>
                 <li>Enter or select a prescription instruction</li>
                 <li>Click "Parse Instruction" to test</li>
                 <li>Review the structured output</li>
+                <li>Click "Generate Calendar Schedule" to see timeline</li>
                 <li>Try different instruction formats</li>
               </ol>
             </div>
