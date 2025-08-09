@@ -15,7 +15,7 @@ export async function PatientTopNavBar() {
 
         {/* Logo */}
         <Link href="/patients/dashboard" className="flex items-center space-x-2">
-          <img src="/logo.svg" alt="Logo" className="h-8 w-8" />
+          <img src="/logo.svg" alt="Logo" className="h-11 w-11" />
           <span className="font-semibold">AI Healthcare</span>
         </Link>
 

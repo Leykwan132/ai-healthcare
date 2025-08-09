@@ -13,7 +13,7 @@ export async function DoctorTopNavBar() {
       {/* Left section (logo stays flush left) */}
       <div className="flex items-center space-x-2 pl-4">
         <Link href="/doctors/dashboard" className="flex items-center space-x-2">
-          <img src="/logo.svg" alt="Logo" className="h-8 w-8" />
+          <img src="/logo.svg" alt="Logo" className="h-11 w-11" />
           <span className="font-semibold">AI Healthcare</span>
         </Link>
       </div>
