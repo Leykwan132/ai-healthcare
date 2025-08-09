@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,14 +10,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { User } from "lucide-react";
 
-export function ProfileButton() {
+export function LoginButton() {
   const router = useRouter();
-  const switchToDoctor = async () => {
+
+  const switchToDoctor = () => {
     window.location.href = "/doctors/dashboard";
   };
 
-  const switchToPatient = async () => {
+  const switchToPatient = () => {
     window.location.href = "/patients/dashboard";
+  };
+
+  const goToLandingPage = () => {
+    window.location.href = "/";
+  };
+
+  const goToLoginForm = () => {
+    router.push("/auth/login");
   };
 
   return (
@@ -27,7 +35,7 @@ export function ProfileButton() {
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full"
+          className="h-11 w-11 rounded-full object-cover"
         >
           <User className="h-5 w-5" />
         </Button>
@@ -40,6 +48,12 @@ export function ProfileButton() {
         <DropdownMenuItem onClick={switchToPatient}>
           Patient
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={goToLandingPage}>
+          Landing Page
+        </DropdownMenuItem>
+        {/* <DropdownMenuItem onClick={goToLoginForm}>
+          Login
+        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );

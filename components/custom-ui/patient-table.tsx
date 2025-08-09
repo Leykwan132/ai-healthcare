@@ -87,7 +87,7 @@ export default function PatientTable() {
                             <td className="border border-gray-300 px-4 py-2">
                                 <button
                                     onClick={() => handleReviewClick(patient.id)}
-                                    className="px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600"
+                                    className="px-3 py-1 rounded-xl bg-blue-500 text-white hover:bg-blue-600"
                                 >
                                     Review
                                 </button>

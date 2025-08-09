@@ -155,22 +155,22 @@ export default function PrescriptionSelector() {
                         {/* Buttons */}
                         <div className="flex justify-end gap-2">
                             <button
+                                onClick={handleAddOrUpdate}
+                                className="px-3 py-1 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
+                                disabled={!selectedMedicine || !frequency}
+                            >
+                                Save
+                            </button>
+                            <button
                                 onClick={() => {
                                     setIsModalOpen(false);
                                     setEditIndex(null);
                                     setSelectedMedicine("");
                                     setFrequency("");
                                 }}
-                                className="px-3 py-1 border rounded hover:bg-gray-100"
+                                className="px-3 py-1 border rounded-xl hover:bg-gray-100"
                             >
                                 Cancel
-                            </button>
-                            <button
-                                onClick={handleAddOrUpdate}
-                                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-                                disabled={!selectedMedicine || !frequency}
-                            >
-                                Save
                             </button>
                         </div>
                     </div>

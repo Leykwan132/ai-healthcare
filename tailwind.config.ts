@@ -82,9 +82,9 @@ export default {
         },
       },
       animation: {
-        'slow-pulse': 'pulse 8s ease-in-out infinite',
-        'slow-ping': 'ping 6s linear infinite',
-        'float-slow': 'float 10s ease-in-out infinite',
+        'slow-pulse': 'pulse 2s ease-in-out infinite',
+        'slow-ping': 'ping 2s linear infinite',
+        'float-slow': 'float 3s ease-in-out infinite',
       },
     },
   },
