@@ -28,7 +28,7 @@ export function CallStatus({
   const getCallStatusText = () => {
     switch (callType) {
       case "incoming":
-        return `Incoming call from ${callerType}...`;
+        return `Call ${callerType}...`;
       case "ongoing":
         return formatDuration(callDuration);
       case "ended":
