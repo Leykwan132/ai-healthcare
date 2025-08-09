@@ -9,6 +9,8 @@ import {
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 
+import { FiChevronRight } from "react-icons/fi";
+
 export function PromptChatBox() {
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -86,19 +88,9 @@ export function PromptChatBox() {
             onClick={sendMessage}
             disabled={!input.trim()}
             aria-label="Send message"
-            className="
-            absolute right-3 top-1/2 -translate-y-1/2
-            w-8 h-8
-            rounded-md
-            bg-blue-600 dark:bg-black
-            text-white
-            hover:bg-blue-700 dark:hover:bg-gray-800
-            disabled:opacity-50 disabled:cursor-not-allowed
-            flex items-center justify-center
-            shadow-md
-          "
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-md bg-blue-600 dark:bg-black text-white hover:bg-blue-700 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-md"
           >
-            <span className="text-2xl leading-none select-none">&gt;</span>
+            <FiChevronRight className="w-5 h-5" />
           </button>
         </div>
 

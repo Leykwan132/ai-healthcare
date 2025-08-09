@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "../logout-button";
+import { ProfileButton } from "../profile-button";
 
 export async function PatientTopNavBar() {
   const supabase = await createClient();
@@ -19,22 +20,20 @@ export async function PatientTopNavBar() {
           <span className="font-semibold">AI Healthcare</span>
         </Link>
 
-        {/* Right side */}
-        {user ? (
-          <div className="flex items-center gap-4">
-            <span className="text-sm">{user.email}</span>
-            <LogoutButton />
-          </div>
-        ) : (
-          <div className="flex gap-2">
-            <Button asChild size="sm" variant="outline">
-              <Link href="/auth/login">Sign in</Link>
-            </Button>
-            <Button asChild size="sm" variant="default">
-              <Link href="/auth/sign-up">Sign up</Link>
-            </Button>
-          </div>
-        )}
+        {/* Right section (shifted for sidebar space) */}
+        <div className="flex items-center gap-4 pr-4" style={{ paddingLeft: "200px" }}>
+          {user ? (
+            <>
+              <span className="text-sm">{user.email}</span>
+              <LogoutButton />
+            </>
+          ) : (
+            <>
+              <span className="text-sm">Developer</span>
+              <ProfileButton />
+            </>
+          )}
+        </div>
       </div>
     </header>
   );
