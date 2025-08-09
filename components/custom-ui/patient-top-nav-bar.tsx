@@ -14,7 +14,7 @@ export async function PatientTopNavBar() {
       <div className="flex justify-between items-center h-16 px-4">
 
         {/* Logo */}
-        <Link href="/patients" className="flex items-center space-x-2">
+        <Link href="/patients/dashboard" className="flex items-center space-x-2">
           <img src="/logo.svg" alt="Logo" className="h-8 w-8" />
           <span className="font-semibold">AI Healthcare</span>
         </Link>

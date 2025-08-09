@@ -11,7 +11,7 @@ type Menu = {
 
 const menus: Menu[] = [
     { name: "Tenants", href: "/tenants" },
-    { name: "Health", href: "/doctors" },
+    { name: "Health", href: "/doctors/dashboard" },
 ];
 
 export function DoctorSidebar() {

@@ -10,7 +10,7 @@ type Menu = {
 };
 
 const menus: Menu[] = [
-    { name: "Home", href: "/patients" },
+    { name: "Home", href: "/patients/dashboard" },
 ];
 
 export function PatientSidebar() {
