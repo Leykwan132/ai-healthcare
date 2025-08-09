@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { PatientAvatar } from "./PatientAvatar";
 import { CallStatus } from "./CallStatus";
 import { CallControls } from "./CallControls";
 import './styles/CallInterface.css';
@@ -19,8 +18,8 @@ interface CallInterfaceProps {
 }
 
 export function CallInterface({
-  patientName = "John Doe",
-  doctorName = "Dr. Smith",
+  patientName = "Patient",
+  doctorName = "MediBuddy",
   patientImage = "",
   doctorImage = "",
   callDirection = "patient-to-doctor",
@@ -83,10 +82,13 @@ export function CallInterface({
     <div className={`call-container ${callType}`}>
       <Card className="call-card">
         <div className="call-content">
-          <PatientAvatar 
-            patientName={displayName} 
-            patientImage={displayImage} 
-          />
+          <div className="avatar-container">
+            <img 
+              src="/follow_up_agent.gif" 
+              alt="Robot Avatar" 
+              className="w-390 h-24 rounded-full"
+            />
+          </div>
 
           <CallStatus
             patientName={displayName}
