@@ -6,15 +6,28 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
-interface ParsedInstruction {
-  medicationName: string;
+interface Medication {
+  name: string;
   dosage: string;
   frequency: string;
   duration: string;
+  timing: string;
   instructions: string;
-  route: string;
-  quantity: string;
-  refills: string;
+}
+
+interface Activity {
+  name: string;
+  duration: string;
+  frequency: string;
+  timing: string;
+  instructions: string;
+}
+
+interface ParsedInstruction {
+  medications: Medication[];
+  activities: Activity[];
+  followUpDate?: string;
+  notes?: string;
 }
 
 interface ParseResponse {
@@ -32,11 +45,11 @@ export default function PromptTestPage() {
   const [provider, setProvider] = useState<'openai' | 'groq'>('openai');
 
   const samplePrescriptions = [
-    "Take 1 tablet of Amoxicillin 500mg three times daily for 7 days",
-    "Apply Hydrocortisone cream 1% to affected area twice daily for 7 days",
-    "Take 2 tablets of Paracetamol 500mg every 6 hours as needed for pain",
-    "Insulin injection 10 units subcutaneously before meals",
-    "Cough syrup 5ml three times daily for 5 days"
+    "Take 1 tablet of Amlodipine 5mg once daily in the morning. Light exercise 30 minutes daily.",
+    "Ventolin inhaler 2 puffs as needed for asthma. Flixotide 250mcg inhaler twice daily morning and evening. Avoid dust and smoke.",
+    "Simvastatin 20mg once daily in the evening with food. Walking exercise 45 minutes daily. Follow up in 2 weeks.",
+    "Novorapid insulin 10 units before breakfast and dinner. Metformin 1000mg twice daily with meals. Check blood sugar daily.",
+    "Take Paracetamol 500mg three times daily for 5 days. Rest and drink plenty of fluids."
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -214,36 +227,84 @@ export default function PromptTestPage() {
                     </div>
                     
                     {result.data && (
-                      <div className="grid grid-cols-1 gap-3">
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                          <div className="font-medium text-gray-600">Medication:</div>
-                          <div className="font-mono bg-gray-50 p-1 rounded">{result.data.medicationName}</div>
-                          
-                          <div className="font-medium text-gray-600">Dosage:</div>
-                          <div className="font-mono bg-gray-50 p-1 rounded">{result.data.dosage}</div>
-                          
-                          <div className="font-medium text-gray-600">Frequency:</div>
-                          <div className="font-mono bg-gray-50 p-1 rounded">{result.data.frequency}</div>
-                          
-                          <div className="font-medium text-gray-600">Duration:</div>
-                          <div className="font-mono bg-gray-50 p-1 rounded">{result.data.duration}</div>
-                          
-                          <div className="font-medium text-gray-600">Route:</div>
-                          <div className="font-mono bg-gray-50 p-1 rounded">{result.data.route}</div>
-                          
-                          <div className="font-medium text-gray-600">Quantity:</div>
-                          <div className="font-mono bg-gray-50 p-1 rounded">{result.data.quantity}</div>
-                          
-                          <div className="font-medium text-gray-600">Refills:</div>
-                          <div className="font-mono bg-gray-50 p-1 rounded">{result.data.refills}</div>
-                        </div>
-                        
-                        {result.data.instructions && (
-                          <div className="mt-3">
-                            <div className="font-medium text-gray-600 text-sm">Additional Instructions:</div>
-                            <div className="font-mono bg-gray-50 p-2 rounded text-sm mt-1">
-                              {result.data.instructions}
+                      <div className="space-y-6">
+                        {/* Medications Section */}
+                        <div>
+                          <h3 className="font-semibold text-gray-900 mb-3">Medications ({result.data.medications.length})</h3>
+                          {result.data.medications.length > 0 ? (
+                            <div className="space-y-3">
+                              {result.data.medications.map((med, index) => (
+                                <div key={index} className="border border-gray-200 rounded-lg p-3 bg-blue-50">
+                                  <h4 className="font-medium text-blue-900 mb-2">{med.name}</h4>
+                                  <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div className="text-gray-600">Dosage:</div>
+                                    <div className="font-mono">{med.dosage}</div>
+                                    <div className="text-gray-600">Frequency:</div>
+                                    <div className="font-mono">{med.frequency}</div>
+                                    <div className="text-gray-600">Duration:</div>
+                                    <div className="font-mono">{med.duration}</div>
+                                    <div className="text-gray-600">Timing:</div>
+                                    <div className="font-mono">{med.timing}</div>
+                                  </div>
+                                  {med.instructions && (
+                                    <div className="mt-2">
+                                      <div className="text-xs text-gray-600">Instructions:</div>
+                                      <div className="text-xs font-mono bg-white p-1 rounded border">{med.instructions}</div>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
                             </div>
+                          ) : (
+                            <div className="text-gray-500 text-sm italic">No medications found</div>
+                          )}
+                        </div>
+
+                        {/* Activities Section */}
+                        <div>
+                          <h3 className="font-semibold text-gray-900 mb-3">Activities ({result.data.activities.length})</h3>
+                          {result.data.activities.length > 0 ? (
+                            <div className="space-y-3">
+                              {result.data.activities.map((activity, index) => (
+                                <div key={index} className="border border-gray-200 rounded-lg p-3 bg-green-50">
+                                  <h4 className="font-medium text-green-900 mb-2">{activity.name}</h4>
+                                  <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div className="text-gray-600">Duration:</div>
+                                    <div className="font-mono">{activity.duration}</div>
+                                    <div className="text-gray-600">Frequency:</div>
+                                    <div className="font-mono">{activity.frequency}</div>
+                                    <div className="text-gray-600">Timing:</div>
+                                    <div className="font-mono">{activity.timing}</div>
+                                  </div>
+                                  {activity.instructions && (
+                                    <div className="mt-2">
+                                      <div className="text-xs text-gray-600">Instructions:</div>
+                                      <div className="text-xs font-mono bg-white p-1 rounded border">{activity.instructions}</div>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-gray-500 text-sm italic">No activities found</div>
+                          )}
+                        </div>
+
+                        {/* Follow-up and Notes */}
+                        {(result.data.followUpDate || result.data.notes) && (
+                          <div className="border-t pt-4">
+                            {result.data.followUpDate && (
+                              <div className="mb-2">
+                                <span className="font-medium text-gray-600 text-sm">Follow-up Date:</span>
+                                <div className="font-mono bg-gray-50 p-1 rounded text-sm mt-1">{result.data.followUpDate}</div>
+                              </div>
+                            )}
+                            {result.data.notes && (
+                              <div>
+                                <span className="font-medium text-gray-600 text-sm">Notes:</span>
+                                <div className="font-mono bg-gray-50 p-2 rounded text-sm mt-1">{result.data.notes}</div>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -295,15 +356,16 @@ export default function PromptTestPage() {
               </ol>
             </div>
             <div>
-              <h4 className="font-medium text-gray-900 mb-2">Expected Output Fields:</h4>
+              <h4 className="font-medium text-gray-900 mb-2">Database Schema Output:</h4>
               <ul className="list-disc list-inside space-y-1 text-gray-600">
-                <li><strong>Medication Name:</strong> Exact drug name</li>
-                <li><strong>Dosage:</strong> Amount and unit (mg, ml, etc.)</li>
-                <li><strong>Frequency:</strong> How often to take</li>
-                <li><strong>Duration:</strong> How long to take</li>
-                <li><strong>Route:</strong> Method of administration</li>
-                <li><strong>Quantity:</strong> Total amount prescribed</li>
+                <li><strong>Medications Array:</strong> Name, dosage, frequency, duration, timing, instructions</li>
+                <li><strong>Activities Array:</strong> Name, duration, frequency, timing, instructions</li>
+                <li><strong>Follow-up Date:</strong> Next appointment/check-up</li>
+                <li><strong>Notes:</strong> Additional instructions or warnings</li>
               </ul>
+              <p className="text-xs text-gray-500 mt-2 italic">
+                Output matches parsedInstructions table schema in database
+              </p>
             </div>
           </div>
         </CardContent>
