@@ -11,6 +11,7 @@ type Menu = {
 
 const menus: Menu[] = [
     { name: "Home", href: "/patients/dashboard" },
+    { name: "Follow Up Agent", href: "/patients/call" },
 ];
 
 export function PatientSidebar() {

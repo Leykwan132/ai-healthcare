@@ -10,8 +10,8 @@ type Menu = {
 };
 
 const menus: Menu[] = [
-    { name: "Tenants", href: "/tenants" },
-    { name: "Health", href: "/doctors/dashboard" },
+    { name: "AI Prescription Scheduler", href: "/doctors/dashboard" },
+    { name: "Patients", href: "/doctors/patient-table" },
 ];
 
 export function DoctorSidebar() {
