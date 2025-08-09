@@ -10,15 +10,15 @@ export default function PatientFilterSearch() {
 
     // Fetch patient phone list
     useEffect(() => {
-        const fetchPatients = async () => {
-            try {
-                const res = await axios.get("/api/patient_list");
-                setOptions(res.data);
-            } catch (error) {
-                console.error("Error fetching patient list:", error);
-            }
-        };
-        fetchPatients();
+        // const fetchPatients = async () => {
+        //     try {
+        //         const res = await axios.get("/api/patient_list");
+        //         setOptions(res.data);
+        //     } catch (error) {
+        //         console.error("Error fetching patient list:", error);
+        //     }
+        // };
+        // fetchPatients();
     }, []);
 
     // Handle selection by phone number
