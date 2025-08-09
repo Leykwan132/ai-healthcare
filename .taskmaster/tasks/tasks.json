@@ -1,0 +1,883 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initialize Project Repository and Setup Development Environment",
+        "description": "Create a new Next.js project using TypeScript, install necessary dependencies (Next.js, Vercel AI SDK, Supabase, Zod, Date-fns, Tailwind CSS, Shadcn/ui), and configure the development environment with appropriate VS Code extensions.",
+        "details": "Set up a new Next.js project with TypeScript. Install the Vercel AI SDK, Supabase client, Zod for schema validation, Date-fns for date manipulation, Tailwind CSS for styling, and Shadcn/ui for UI components. Configure VS Code with ESLint, Prettier, and TypeScript support.",
+        "testStrategy": "Unit tests for dependency installation and configuration.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install Dependencies",
+            "description": "Install Vercel AI SDK",
+            "dependencies": [],
+            "details": "Install all required dependencies using npm or yarn.\n<info added on 2025-08-09T04:41:47.346Z>\nSuccessfully installed Vercel AI SDK (ai: ^5.0.8) using npm. The package has been added to package.json dependencies and is ready for use in the project. This SDK will enable AI-powered features like chat completions, streaming responses, and other AI functionalities in the Next.js application.\n</info added on 2025-08-09T04:41:47.346Z>",
+            "status": "done",
+            "testStrategy": "Unit tests for dependency installation and version checks."
+          },
+          {
+            "id": 2,
+            "title": "Configure VS Code Development Environment",
+            "description": "Configure VS Code with ESLint, Prettier, and TypeScript support.",
+            "dependencies": [],
+            "details": "Install and configure the necessary VS Code extensions for TypeScript, ESLint, and Prettier to ensure consistent code style and linting.",
+            "status": "done",
+            "testStrategy": "Visual inspection of VS Code settings and code linting results."
+          },
+          {
+            "id": 3,
+            "title": "Establish Supabase Database Connection and Create Tables",
+            "description": "Connect the application to a Supabase PostgreSQL database and create the `Prescriptions` and `Schedules` tables.",
+            "dependencies": [],
+            "details": "Use the Supabase PostgreSQL client to create the `Prescriptions` and `Schedules` tables with the specified columns and data types.",
+            "status": "pending",
+            "testStrategy": "Integration tests to verify database schema and CRUD operations."
+          },
+          {
+            "id": 4,
+            "title": "Implement Language Detection for Prescription Input",
+            "description": "Integrate a language detection library and store the detected language in the `Prescriptions` table.",
+            "dependencies": [],
+            "details": "Use a library like `detect-language` to automatically detect the language of the input and store the detected language in the `Prescriptions` table.",
+            "status": "pending",
+            "testStrategy": "Unit tests for language detection and form input handling."
+          },
+          {
+            "id": 5,
+            "title": "Implement Data Persistence to Supabase Database",
+            "description": "Save the generated `Prescriptions` and `Schedules` data to the Supabase database.",
+            "dependencies": [],
+            "details": "Create functions to save the data to the appropriate tables in the Supabase database. Implement error handling for database operations.",
+            "status": "pending",
+            "testStrategy": "Integration tests to verify data persistence."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Establish Supabase Database Connection and Schema Setup",
+        "description": "Connect the application to a Supabase PostgreSQL database. Create the `Prescriptions` and `Schedules` tables with the defined schemas (including `id`, `patientId`, `doctorId`, `originalInstructions`, `language`, `status`, `createdAt`, `updatedAt` for Prescriptions, and `prescriptionId`, `type`, `title`, `description`, `dosage`, `frequency`, `startDate`, `endDate`, `times`, `followUpDate`, `status` for Schedules).",
+        "details": "Use Supabase's PostgreSQL client to create the tables with the specified columns and data types. Implement basic CRUD operations (Create, Read, Update, Delete) for testing.",
+        "testStrategy": "Integration tests to verify database schema and CRUD operations.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up Next.js Project and Install Dependencies",
+            "description": "Create a new Next.js project with TypeScript and install core dependencies: Next.js, Vercel AI SDK, Supabase client, Zod, Date-fns, Tailwind CSS, and Shadcn/ui.",
+            "dependencies": [],
+            "details": "Configure VS Code with ESLint, Prettier, and TypeScript support.  Ensure proper version management for all installed packages.",
+            "status": "pending",
+            "testStrategy": "Unit tests for dependency installation and configuration."
+          },
+          {
+            "id": 2,
+            "title": "Create Supabase Database Schema for Prescriptions",
+            "description": "Implement the `Prescriptions` table schema in the Supabase PostgreSQL database, including all specified columns and data types.",
+            "dependencies": [],
+            "details": "Use Supabase's PostgreSQL client to execute the necessary SQL commands for table creation. Implement basic CRUD operations for testing.",
+            "status": "pending",
+            "testStrategy": "Integration tests to verify schema and CRUD operations."
+          },
+          {
+            "id": 3,
+            "title": "Create Supabase Database Schema for Schedules",
+            "description": "Implement the `Schedules` table schema in the Supabase PostgreSQL database, including all specified columns and data types.",
+            "dependencies": [],
+            "details": "Use Supabase's PostgreSQL client to execute the necessary SQL commands for table creation. Implement basic CRUD operations for testing.",
+            "status": "pending",
+            "testStrategy": "Integration tests to verify schema and CRUD operations."
+          },
+          {
+            "id": 4,
+            "title": "Implement Language Detection for Prescription Input",
+            "description": "Create a Next.js form with a text area for the doctor to input the prescription instructions. Integrate a language detection library (e.g., `detect-language`) and store the detected language in the `Prescriptions` table.",
+            "dependencies": [],
+            "details": "Build a basic form with a text input field. Integrate a language detection library to automatically detect the language of the input. Store the detected language in the `Prescriptions` table.",
+            "status": "pending",
+            "testStrategy": "Unit tests for language detection and form input handling."
+          },
+          {
+            "id": 5,
+            "title": "Implement Data Persistence to Supabase Database",
+            "description": "Create functions to save the generated `Prescriptions` and `Schedules` data to the Supabase database, handling potential errors.",
+            "dependencies": [],
+            "details": "Create functions to save the data to the appropriate tables in the Supabase database. Implement error handling for database operations.  Ensure data validation using Zod.",
+            "status": "pending",
+            "testStrategy": "Integration tests to verify data persistence."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Implement Basic Prescription Input Form with Language Detection",
+        "description": "Create a simple Next.js form with a text area for the doctor to input the prescription instructions. Implement language detection (English and Malay) using a library like `detect-language` or similar, and store the detected language in the `Prescriptions` table.",
+        "details": "Build a basic form with a text input field. Integrate a language detection library to automatically detect the language of the input. Store the detected language in the `Prescriptions` table.",
+        "testStrategy": "Unit tests for language detection and form input handling.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Develop Next.js Prescription Form",
+            "description": "Create a basic Next.js form with a text area for doctor input, ensuring it's responsive and accessible.",
+            "dependencies": [],
+            "details": "Implement the form structure, including input validation and basic styling.",
+            "status": "pending",
+            "testStrategy": "Unit tests for form element rendering and basic input handling."
+          },
+          {
+            "id": 2,
+            "title": "Integrate Language Detection Library",
+            "description": "Implement language detection using a library like `detect-language` to automatically identify the input language.",
+            "dependencies": [],
+            "details": "Choose and integrate a suitable language detection library. Handle potential errors during language detection.",
+            "status": "pending",
+            "testStrategy": "Unit tests to verify correct language detection for English and Malay."
+          },
+          {
+            "id": 3,
+            "title": "Store Detected Language in Prescriptions Table",
+            "description": "Modify the `Prescriptions` table schema to include a language code column and implement logic to store the detected language code.",
+            "dependencies": [],
+            "details": "Update the database schema and implement the logic to save the detected language code to the `Prescriptions` table.",
+            "status": "pending",
+            "testStrategy": "Integration tests to verify data persistence of the detected language code."
+          },
+          {
+            "id": 4,
+            "title": "Connect Form Input to OpenAI API",
+            "description": "Establish communication between the Next.js form and the OpenAI API for instruction parsing.",
+            "dependencies": [],
+            "details": "Implement the necessary API calls to send the form input to the OpenAI API and receive the parsed instruction data.",
+            "status": "pending",
+            "testStrategy": "Manual testing with various prescription examples to validate the API integration."
+          },
+          {
+            "id": 5,
+            "title": "Implement Error Handling and Logging for API Calls",
+            "description": "Add robust error handling and logging for all API calls to the OpenAI API.",
+            "dependencies": [],
+            "details": "Implement error handling for API requests and logging of errors to a centralized logging system.  Include retry logic for transient errors.",
+            "status": "pending",
+            "testStrategy": "Manual testing and monitoring of API calls for error handling and logging."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Set up Vercel AI SDK Integration",
+        "description": "Install and configure the Vercel AI SDK.  Set up the necessary API keys and authentication.  Implement basic error handling for AI service failures.",
+        "details": "Install the Vercel AI SDK and configure it with your OpenAI API key. Implement error handling to gracefully manage potential AI service failures.",
+        "testStrategy": "Unit tests for API key configuration and error handling.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install Vercel AI SDK",
+            "description": "Download and install the Vercel AI SDK according to the official documentation.",
+            "dependencies": [],
+            "details": "Follow the SDK installation instructions to set up the development environment.",
+            "status": "pending",
+            "testStrategy": "Unit tests to verify successful installation and basic functionality."
+          },
+          {
+            "id": 2,
+            "title": "Configure OpenAI API Key",
+            "description": "Set up the OpenAI API key within the Vercel AI SDK configuration.",
+            "dependencies": [],
+            "details": "Provide your OpenAI API key to enable AI service access.",
+            "status": "pending",
+            "testStrategy": "Verify API key is correctly loaded and accessible."
+          },
+          {
+            "id": 3,
+            "title": "Implement Basic Error Handling",
+            "description": "Add error handling mechanisms to manage potential AI service failures.",
+            "dependencies": [],
+            "details": "Implement try-catch blocks and error handling logic to gracefully handle API errors.",
+            "status": "pending",
+            "testStrategy": "Unit tests to ensure error handling is triggered and handled correctly."
+          },
+          {
+            "id": 4,
+            "title": "Test API Key Configuration",
+            "description": "Validate the API key configuration and its ability to connect to the AI service.",
+            "dependencies": [],
+            "details": "Perform tests to confirm the API key is valid and the SDK can successfully communicate with the OpenAI service.",
+            "status": "pending",
+            "testStrategy": "Integration tests to verify API connectivity and response handling."
+          },
+          {
+            "id": 5,
+            "title": "Document Error Handling Implementation",
+            "description": "Document the implemented error handling and logging strategies.",
+            "dependencies": [],
+            "details": "Create documentation outlining the error handling logic and logging procedures.",
+            "status": "pending",
+            "testStrategy": "Review documentation for completeness and accuracy."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Implement Initial AI Prompt for Instruction Parsing",
+        "description": "Create a basic AI prompt to instruct the OpenAI API to parse the doctor's input into a structured format (using the `ParsedInstruction` model).",
+        "details": "Craft a well-defined prompt for the OpenAI API, instructing it to extract medication names, dosages, frequencies, and other relevant information from the doctor's input.  Test with simple examples.",
+        "testStrategy": "Manual testing with various prescription examples.",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Craft Initial OpenAI Prompt",
+            "description": "Develop a prompt for the OpenAI API instructing it to extract medication names, dosages, frequencies, and other relevant information from doctor's input, targeting the `ParsedInstruction` model.",
+            "dependencies": [],
+            "details": "The prompt should clearly define the expected output format and provide examples for clarity. Focus on a basic extraction of key medication details.",
+            "status": "pending",
+            "testStrategy": "Manual testing with 3-5 simple prescription examples to verify basic extraction."
+          },
+          {
+            "id": 2,
+            "title": "Test Prompt with Simple Prescription 1",
+            "description": "Execute the crafted prompt with a sample prescription containing a single medication with dosage and frequency.",
+            "dependencies": [],
+            "details": "Record the output from the OpenAI API and assess its accuracy in extracting the required information.",
+            "status": "pending",
+            "testStrategy": "Manual verification of extracted data against expected values."
+          },
+          {
+            "id": 3,
+            "title": "Test Prompt with Simple Prescription 2",
+            "description": "Execute the crafted prompt with a second sample prescription containing a different medication and dosage format.",
+            "dependencies": [],
+            "details": "Evaluate the prompt's adaptability to variations in prescription wording and dosage formats.",
+            "status": "pending",
+            "testStrategy": "Manual verification of extracted data against expected values."
+          },
+          {
+            "id": 4,
+            "title": "Refine Prompt Based on Initial Testing",
+            "description": "Analyze the results from testing with the first two prescriptions and adjust the prompt to improve accuracy and robustness.",
+            "dependencies": [],
+            "details": "Address any identified weaknesses in the prompt, such as incorrect extraction or failure to handle specific dosage units.",
+            "status": "pending",
+            "testStrategy": "Iterative testing with a wider range of prescription examples."
+          },
+          {
+            "id": 5,
+            "title": "Document Prompt and Initial Testing Results",
+            "description": "Create a document summarizing the final OpenAI prompt and the results of the initial testing phase.",
+            "dependencies": [],
+            "details": "Include details on prompt modifications and observed performance. This will serve as a baseline for future improvements.",
+            "status": "pending",
+            "testStrategy": "Review and approval of documentation by the development team."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Develop Initial Schedule Generation Logic",
+        "description": "Implement basic logic to convert the parsed instruction data into a schedule format, including setting start and end dates, times, and frequencies.",
+        "details": "Create functions to generate the `Schedules` data based on the parsed instruction data.  Handle basic frequency and time calculations.",
+        "testStrategy": "Unit tests for schedule generation logic.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Schedule Generation Function Structure",
+            "description": "Define the function signature and overall structure for generating the initial schedule data, considering input parameters and output format.",
+            "dependencies": [],
+            "details": "Create a function that accepts parsed instruction data and returns a `Schedules` object with start/end dates, times, and frequencies.",
+            "status": "pending",
+            "testStrategy": "Unit tests focusing on function input validation and output data structure."
+          },
+          {
+            "id": 2,
+            "title": "Implement Frequency Calculation Logic",
+            "description": "Develop the core logic to calculate schedule frequencies based on parsed instruction data (e.g., daily, weekly, monthly).",
+            "dependencies": [],
+            "details": "Implement functions to convert frequency strings (e.g., 'daily', 'weekly') into corresponding time intervals using Date-fns.",
+            "status": "pending",
+            "testStrategy": "Unit tests verifying correct time interval calculations for various frequency inputs."
+          },
+          {
+            "id": 3,
+            "title": "Integrate Date-fns for Date Manipulation",
+            "description": "Utilize the Date-fns library to perform date calculations and formatting for schedule start and end dates.",
+            "dependencies": [],
+            "details": "Implement functions to add or subtract time intervals from a base date to determine schedule start and end dates.",
+            "status": "pending",
+            "testStrategy": "Unit tests ensuring accurate date calculations across different time intervals."
+          },
+          {
+            "id": 4,
+            "title": "Create Initial Schedules Data Model",
+            "description": "Define the structure of the `Schedules` data object, including fields for start date, end date, times, and frequencies.",
+            "dependencies": [],
+            "details": "Establish a consistent data model for representing generated schedules, ensuring compatibility with the schedule display component.",
+            "status": "pending",
+            "testStrategy": "Unit tests validating the data structure of the generated `Schedules` object."
+          },
+          {
+            "id": 5,
+            "title": "Test Schedule Generation Logic",
+            "description": "Conduct thorough testing of the schedule generation logic with various input scenarios.",
+            "dependencies": [],
+            "details": "Execute a suite of unit tests covering different frequency types, time intervals, and edge cases.",
+            "status": "pending",
+            "testStrategy": "Comprehensive unit tests covering all aspects of the schedule generation process."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Implement Zod Schema Validation for Parsed Instructions",
+        "description": "Use Zod to define a schema for the `ParsedInstruction` model and validate the output from the AI API.",
+        "details": "Create a Zod schema that matches the expected structure of the `ParsedInstruction` model. Validate the output from the AI API against this schema.",
+        "testStrategy": "Unit tests for schema validation.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define Zod Schema for ParsedInstruction",
+            "description": "Create a Zod schema that accurately represents the expected structure of the `ParsedInstruction` model, including fields like medication name, dosage, frequency, and instructions.",
+            "dependencies": [],
+            "details": "This involves specifying data types, required fields, and validation rules for each element within the `ParsedInstruction` model.",
+            "status": "pending",
+            "testStrategy": "Unit tests to ensure the schema correctly validates various `ParsedInstruction` objects."
+          },
+          {
+            "id": 2,
+            "title": "Implement API Call to OpenAI",
+            "description": "Develop the code to send the doctor's input to the OpenAI API using the defined prompt.",
+            "dependencies": [],
+            "details": "This includes handling API requests, managing responses, and error handling during the API call.",
+            "status": "pending",
+            "testStrategy": "Manual testing with a small set of test prescriptions to verify the API call functionality."
+          },
+          {
+            "id": 3,
+            "title": "Parse OpenAI Response",
+            "description": "Process the JSON response from the OpenAI API to extract the structured `ParsedInstruction` data.",
+            "dependencies": [],
+            "details": "This involves parsing the JSON response and transforming it into the `ParsedInstruction` model format.",
+            "status": "pending",
+            "testStrategy": "Unit tests to verify the parsing logic and ensure the output matches the expected `ParsedInstruction` structure."
+          },
+          {
+            "id": 4,
+            "title": "Validate Parsed Instruction with Zod",
+            "description": "Use the defined Zod schema to validate the `ParsedInstruction` model after it has been parsed from the OpenAI API response.",
+            "dependencies": [],
+            "details": "This step confirms that the parsed data conforms to the schema's constraints.",
+            "status": "pending",
+            "testStrategy": "Unit tests to verify that the schema successfully validates the `ParsedInstruction` model."
+          },
+          {
+            "id": 5,
+            "title": "Error Handling and Logging for API Interaction",
+            "description": "Implement error handling and logging for the API call to OpenAI, including handling potential API errors and logging relevant information.",
+            "dependencies": [],
+            "details": "This ensures that errors during the API interaction are gracefully handled and logged for debugging and monitoring.",
+            "status": "pending",
+            "testStrategy": "Manual testing and monitoring of the API call to identify and resolve any errors."
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Create Basic Schedule Display Component",
+        "description": "Develop a Next.js component to display the generated schedules in a user-friendly format.",
+        "details": "Build a component that renders the `Schedules` data in a visually appealing way.  Include basic styling using Tailwind CSS.",
+        "testStrategy": "Integration tests to verify schedule display.",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up Next.js Component Structure",
+            "description": "Create the basic Next.js component file for the schedule display, including necessary imports and initial state.",
+            "dependencies": [],
+            "details": "Establish the component's directory structure and import the `Schedules` data. Initialize the component with an empty state.",
+            "status": "pending",
+            "testStrategy": "Initial component rendering and data loading verification."
+          },
+          {
+            "id": 2,
+            "title": "Implement Schedule Rendering Logic",
+            "description": "Develop the core logic to iterate through the `Schedules` data and render each schedule item.",
+            "dependencies": [],
+            "details": "Create a function to map over the `Schedules` array and render each schedule entry using appropriate HTML elements.  Implement basic styling using Tailwind CSS.",
+            "status": "pending",
+            "testStrategy": "Verify that all schedule entries are displayed correctly and that the styling is applied as expected."
+          },
+          {
+            "id": 3,
+            "title": "Integrate Tailwind CSS Styling",
+            "description": "Apply basic styling to the schedule display component using Tailwind CSS classes.",
+            "dependencies": [],
+            "details": "Add Tailwind CSS classes to the component to control the layout, typography, and visual appearance of the schedule display. Focus on readability and a user-friendly design.",
+            "status": "pending",
+            "testStrategy": "Visual inspection of the schedule display to ensure it meets the design requirements."
+          },
+          {
+            "id": 4,
+            "title": "Connect to Supabase Database (Schedule Data)",
+            "description": "Fetch and display schedule data from the Supabase database.",
+            "dependencies": [],
+            "details": "Modify the component to fetch the `Schedules` data from the Supabase database using the appropriate API calls.  Display the fetched data within the rendered schedule.",
+            "status": "pending",
+            "testStrategy": "Verify that the schedule data is correctly retrieved from the database and displayed in the component."
+          },
+          {
+            "id": 5,
+            "title": "Implement Error Handling for Data Fetching",
+            "description": "Add error handling to gracefully manage potential issues during data fetching from the Supabase database.",
+            "dependencies": [],
+            "details": "Implement error handling mechanisms to catch and display any errors that may occur during the data fetching process.  Provide informative error messages to the user.",
+            "status": "pending",
+            "testStrategy": "Simulate network errors and database connection issues to verify the error handling functionality."
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Implement Data Persistence to Supabase Database",
+        "description": "Save the generated `Prescriptions` and `Schedules` data to the Supabase database.",
+        "details": "Create functions to save the data to the appropriate tables in the Supabase database.  Implement error handling for database operations.",
+        "testStrategy": "Integration tests to verify data persistence.",
+        "priority": "medium",
+        "dependencies": [
+          7,
+          8
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Supabase Database Schema",
+            "description": "Define the schema for the `Prescriptions` and `Schedules` tables in Supabase, including appropriate data types and relationships.",
+            "dependencies": [],
+            "details": "This includes creating tables for `Prescriptions` (medication name, dosage, frequency, patient ID) and `Schedules` (schedule ID, patient ID, start time, end time).",
+            "status": "pending",
+            "testStrategy": "Schema validation using Supabase's schema inspector."
+          },
+          {
+            "id": 2,
+            "title": "Implement Prescription Data Saving Function",
+            "description": "Create a function to save `Prescriptions` data to the `Prescriptions` table in Supabase.",
+            "dependencies": [],
+            "details": "This function should handle data sanitization and error handling during database insertion.",
+            "status": "pending",
+            "testStrategy": "Integration tests to verify that prescription data is correctly inserted into the `Prescriptions` table."
+          },
+          {
+            "id": 3,
+            "title": "Implement Schedule Data Saving Function",
+            "description": "Create a function to save `Schedules` data to the `Schedules` table in Supabase.",
+            "dependencies": [],
+            "details": "This function should handle data sanitization and error handling during database insertion.",
+            "status": "pending",
+            "testStrategy": "Integration tests to verify that schedule data is correctly inserted into the `Schedules` table."
+          },
+          {
+            "id": 4,
+            "title": "Implement Error Handling for Database Operations",
+            "description": "Add robust error handling to the data saving functions to catch and log database errors.",
+            "dependencies": [],
+            "details": "Implement try-catch blocks and logging mechanisms to handle potential database errors (e.g., connection issues, validation errors).",
+            "status": "pending",
+            "testStrategy": "Manual testing with various error scenarios to ensure proper error handling and logging."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Data Saving with Existing Functions",
+            "description": "Connect the newly implemented data saving functions with the existing functions that generate `Prescriptions` and `Schedules` data.",
+            "dependencies": [],
+            "details": "Ensure that the generated data is correctly passed to the data saving functions and that errors are handled appropriately.",
+            "status": "pending",
+            "testStrategy": "End-to-end integration tests to verify the complete data persistence workflow."
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Implement Error Handling and Logging",
+        "description": "Add robust error handling and logging to the application.",
+        "details": "Implement error handling for all API calls, database operations, and UI interactions.  Log errors to a centralized logging system.",
+        "testStrategy": "Manual testing and monitoring.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement API Call Error Handling",
+            "description": "Develop error handling mechanisms for all API calls, including status code checks, timeout handling, and retry logic.",
+            "dependencies": [],
+            "details": "Implement try-catch blocks around each API call to gracefully handle errors.  Configure appropriate retry policies.",
+            "status": "pending",
+            "testStrategy": "Manual testing of API calls with various error scenarios."
+          },
+          {
+            "id": 2,
+            "title": "Implement Database Operation Error Handling",
+            "description": "Add error handling for database operations, including connection errors, query errors, and data validation failures.",
+            "dependencies": [],
+            "details": "Utilize database connection pools and transaction management to minimize connection errors. Implement robust data validation before saving to the database.",
+            "status": "pending",
+            "testStrategy": "Integration tests to simulate database errors and verify error handling."
+          },
+          {
+            "id": 3,
+            "title": "Implement UI Interaction Error Handling",
+            "description": "Add error handling for UI interactions, such as form submissions, button clicks, and data updates.",
+            "dependencies": [],
+            "details": "Handle potential errors during UI interactions, such as invalid input, network issues, and component rendering failures.",
+            "status": "pending",
+            "testStrategy": "Manual testing of UI interactions with various error scenarios."
+          },
+          {
+            "id": 4,
+            "title": "Configure Centralized Logging System",
+            "description": "Set up a centralized logging system to capture and store all errors and warnings.",
+            "dependencies": [],
+            "details": "Integrate logging libraries with a centralized logging service (e.g., Sentry, LogRocket). Configure logging levels and message formats.",
+            "status": "pending",
+            "testStrategy": "Monitor the logging system for error messages and verify that errors are being captured correctly."
+          },
+          {
+            "id": 5,
+            "title": "Implement Error Reporting and Alerting",
+            "description": "Configure alerts and notifications for critical errors.",
+            "dependencies": [],
+            "details": "Set up alerts to notify developers of critical errors via email, Slack, or other channels.",
+            "status": "pending",
+            "testStrategy": "Simulate critical errors and verify that alerts are triggered and delivered."
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Implement Basic UI Styling with Tailwind CSS",
+        "description": "Apply styling to the application using Tailwind CSS.",
+        "details": "Use Tailwind CSS classes to style the application's components and elements.",
+        "testStrategy": "Visual inspection.",
+        "priority": "low",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Research Tailwind CSS Basic Styling Concepts",
+            "description": "Investigate fundamental Tailwind CSS classes for common UI elements like buttons, typography, and spacing.",
+            "dependencies": [],
+            "details": "Focus on learning responsive design principles with Tailwind's utility classes.",
+            "status": "pending",
+            "testStrategy": "Visual inspection of basic component styling."
+          },
+          {
+            "id": 2,
+            "title": "Apply Tailwind CSS to the Application Header",
+            "description": "Style the application's header component using Tailwind CSS classes, including font sizes, colors, and spacing.",
+            "dependencies": [],
+            "details": "Implement responsive design for the header across different screen sizes.",
+            "status": "pending",
+            "testStrategy": "Visual inspection of header styling on various devices."
+          },
+          {
+            "id": 3,
+            "title": "Style Application Buttons with Tailwind CSS",
+            "description": "Apply Tailwind CSS classes to style the application's buttons, including hover effects and different button sizes.",
+            "dependencies": [],
+            "details": "Ensure buttons are visually consistent and accessible.",
+            "status": "pending",
+            "testStrategy": "Visual inspection of button styling and accessibility."
+          },
+          {
+            "id": 4,
+            "title": "Style Application Typography with Tailwind CSS",
+            "description": "Apply Tailwind CSS classes to style the application's typography, including font families, sizes, and line heights.",
+            "dependencies": [],
+            "details": "Implement a consistent typographic hierarchy throughout the application.",
+            "status": "pending",
+            "testStrategy": "Visual inspection of text styling across the application."
+          },
+          {
+            "id": 5,
+            "title": "Implement Responsive Design for Basic UI Elements",
+            "description": "Utilize Tailwind CSS's responsive design classes to ensure the application's UI adapts to different screen sizes.",
+            "dependencies": [],
+            "details": "Test the application's responsiveness on various devices and screen resolutions.",
+            "status": "pending",
+            "testStrategy": "Visual inspection of UI elements on different devices."
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Add Basic User Interface Components",
+        "description": "Implement basic UI components such as buttons, input fields, and dropdown menus.",
+        "details": "Use Shadcn/ui components to build the UI.",
+        "testStrategy": "Visual inspection.",
+        "priority": "low",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Button Component",
+            "description": "Create a basic button component using Shadcn/ui, focusing on functionality and styling.",
+            "dependencies": [],
+            "details": "Utilize Shadcn/ui's button component, ensuring it responds to clicks and has basic styling.",
+            "status": "pending",
+            "testStrategy": "Visual inspection and basic click functionality testing."
+          },
+          {
+            "id": 2,
+            "title": "Implement Input Field Component",
+            "description": "Create a basic input field component using Shadcn/ui, focusing on data input and validation.",
+            "dependencies": [],
+            "details": "Utilize Shadcn/ui's input component, ensuring it accepts user input and has basic styling.",
+            "status": "pending",
+            "testStrategy": "Visual inspection and basic input validation testing."
+          },
+          {
+            "id": 3,
+            "title": "Implement Dropdown Menu Component",
+            "description": "Create a basic dropdown menu component using Shadcn/ui, focusing on selection and display.",
+            "dependencies": [],
+            "details": "Utilize Shadcn/ui's dropdown component, ensuring it allows selection from a predefined list and displays the selected value.",
+            "status": "pending",
+            "testStrategy": "Visual inspection and basic selection testing."
+          },
+          {
+            "id": 4,
+            "title": "Integrate Button, Input, and Dropdown Components",
+            "description": "Combine the implemented components into a basic UI layout.",
+            "dependencies": [],
+            "details": "Arrange the components in a basic UI layout, ensuring they interact correctly.",
+            "status": "pending",
+            "testStrategy": "Integration testing to verify component interaction."
+          },
+          {
+            "id": 5,
+            "title": "Basic UI Styling with Tailwind CSS",
+            "description": "Apply basic styling to the UI components using Tailwind CSS.",
+            "dependencies": [],
+            "details": "Utilize Tailwind CSS to style the components, focusing on visual appearance.",
+            "status": "pending",
+            "testStrategy": "Visual inspection to ensure consistent styling."
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Implement Data Fetching and State Management",
+        "description": "Implement data fetching and state management using React hooks.",
+        "details": "Use React hooks to manage the application's state and fetch data from the Supabase database.",
+        "testStrategy": "Unit tests for data fetching and state management.",
+        "priority": "low",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up Supabase Client and Hooks",
+            "description": "Initialize the Supabase client and integrate React hooks for state management (useState, useEffect).",
+            "dependencies": [],
+            "details": "Establish a connection to the Supabase database and configure React hooks for managing application state.  Implement basic data fetching using `useEffect`.",
+            "status": "pending",
+            "testStrategy": "Unit tests to verify the Supabase client connection and hook initialization."
+          },
+          {
+            "id": 2,
+            "title": "Implement Initial Data Fetching",
+            "description": "Fetch initial data from the Supabase database for demonstration purposes.",
+            "dependencies": [],
+            "details": "Create a function to retrieve a sample dataset from the Supabase database and store it in the application's state.",
+            "status": "pending",
+            "testStrategy": "Manual testing to verify the data is correctly fetched and displayed."
+          },
+          {
+            "id": 3,
+            "title": "Implement State Management for Data Updates",
+            "description": "Implement state management logic to update the application's state based on user interactions or API responses.",
+            "dependencies": [],
+            "details": "Utilize React hooks to manage the state of the data, allowing for updates and modifications.",
+            "status": "pending",
+            "testStrategy": "Unit tests to verify state updates and their impact on the UI."
+          },
+          {
+            "id": 4,
+            "title": "Implement Error Handling for Data Fetching",
+            "description": "Add error handling to gracefully manage potential errors during data fetching operations.",
+            "dependencies": [],
+            "details": "Implement try-catch blocks around data fetching calls and handle potential errors, displaying appropriate messages to the user.",
+            "status": "pending",
+            "testStrategy": "Manual testing to simulate error scenarios and verify error handling."
+          },
+          {
+            "id": 5,
+            "title": "Implement Data Persistence Logic",
+            "description": "Implement the logic to save data to the Supabase database.",
+            "dependencies": [],
+            "details": "Create functions to save the generated data to the appropriate tables in the Supabase database, incorporating error handling.",
+            "status": "pending",
+            "testStrategy": "Integration tests to verify data persistence and error handling."
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Implement Basic User Authentication",
+        "description": "Implement basic user authentication using a library like NextAuth.js.",
+        "details": "Set up user authentication and authorization.",
+        "testStrategy": "Manual testing.",
+        "priority": "low",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up NextAuth.js Configuration",
+            "description": "Install and configure NextAuth.js with a suitable authentication provider (e.g., Google, EmailJS).  Establish basic user registration and login flows.",
+            "dependencies": [],
+            "details": "Configure NextAuth.js with a chosen authentication provider. Implement user registration and login functionality.",
+            "status": "pending",
+            "testStrategy": "Manual testing of user registration and login processes."
+          },
+          {
+            "id": 2,
+            "title": "Implement User Authentication Routes",
+            "description": "Create API routes for user authentication, including registration, login, and logout.",
+            "dependencies": [],
+            "details": "Develop routes to handle user authentication requests and responses.",
+            "status": "pending",
+            "testStrategy": "Manual testing of authentication routes."
+          },
+          {
+            "id": 3,
+            "title": "Integrate Authentication with NextAuth.js",
+            "description": "Connect the authentication routes to the NextAuth.js middleware.",
+            "dependencies": [],
+            "details": "Configure NextAuth.js middleware to handle authentication requests.",
+            "status": "pending",
+            "testStrategy": "Manual testing of authentication middleware."
+          },
+          {
+            "id": 4,
+            "title": "Implement Authorization Logic",
+            "description": "Implement authorization logic to control access to protected routes based on user authentication status.",
+            "dependencies": [],
+            "details": "Define authorization rules and integrate them into the application's routes.",
+            "status": "pending",
+            "testStrategy": "Manual testing of protected routes."
+          },
+          {
+            "id": 5,
+            "title": "Set up User Session Management",
+            "description": "Implement session management to maintain user authentication state across requests.",
+            "dependencies": [],
+            "details": "Configure NextAuth.js to manage user sessions effectively.",
+            "status": "pending",
+            "testStrategy": "Manual testing of session management functionality."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Final Testing and Bug Fixing",
+        "description": "Conduct thorough testing and fix any remaining bugs.",
+        "details": "Perform comprehensive testing to ensure the application is stable and functional.",
+        "testStrategy": "Manual testing and automated testing.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up Next.js Project and Install Dependencies",
+            "description": "Create a new Next.js project with TypeScript and install all required dependencies: Next.js, Vercel AI SDK, Supabase client, Zod, Date-fns, Tailwind CSS, and Shadcn/ui.",
+            "dependencies": [],
+            "details": "Configure VS Code with ESLint, Prettier, and TypeScript support.",
+            "status": "pending",
+            "testStrategy": "Unit tests for dependency installation and configuration."
+          },
+          {
+            "id": 2,
+            "title": "Establish Supabase Database Connection",
+            "description": "Connect the application to a Supabase PostgreSQL database and verify the connection.",
+            "dependencies": [],
+            "details": "Configure the Supabase client with the correct API key and region.",
+            "status": "pending",
+            "testStrategy": "Integration tests to verify database connection."
+          },
+          {
+            "id": 3,
+            "title": "Create Prescriptions and Schedules Tables",
+            "description": "Implement the database schema for the `Prescriptions` and `Schedules` tables in Supabase PostgreSQL.",
+            "dependencies": [],
+            "details": "Create the tables with the specified columns and data types, including `id`, `patientId`, `doctorId`, `originalInstructions`, `language`, `status`, `createdAt`, `updatedAt` for Prescriptions, and `prescriptionId`, `type`, `title`, `description`, `dosage`, `frequency`, `startDate`, `endDate`, `times`, `followUpDate`, `status` for Schedules.",
+            "status": "pending",
+            "testStrategy": "Integration tests to verify database schema and CRUD operations."
+          },
+          {
+            "id": 4,
+            "title": "Implement Initial AI Prompt for Instruction Parsing",
+            "description": "Craft a well-defined prompt for the OpenAI API to instruct it to parse the doctor's input into a structured format (using the `ParsedInstruction` model).",
+            "dependencies": [],
+            "details": "Test with simple examples to ensure correct parsing.",
+            "status": "pending",
+            "testStrategy": "Manual testing with various prescription examples."
+          },
+          {
+            "id": 5,
+            "title": "Set up Vercel AI SDK Integration",
+            "description": "Install and configure the Vercel AI SDK. Set up the necessary API keys and authentication. Implement basic error handling for AI service failures.",
+            "dependencies": [],
+            "details": "Install the Vercel AI SDK and configure it with your OpenAI API key. Implement error handling to gracefully manage potential AI service failures.",
+            "status": "pending",
+            "testStrategy": "Unit tests for API key configuration and error handling."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-09T03:35:00.329Z",
+      "updated": "2025-08-09T04:46:25.815Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
