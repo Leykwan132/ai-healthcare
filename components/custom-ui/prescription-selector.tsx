@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Select from "react-select";
 
 const prescriptionOptions = [
     { value: "Paracetamol", label: "Paracetamol" },
@@ -68,7 +69,7 @@ export default function PrescriptionSelector() {
     );
 
     return (
-        <div className="w-96 space-y-4">
+        <div className="w-full space-y-4">
             <label className="block text-sm font-medium text-gray-700">
                 Prescriptions
             </label>
@@ -126,22 +127,18 @@ export default function PrescriptionSelector() {
                         </h2>
 
                         {/* Medicine dropdown */}
-                        <select
-                            value={selectedMedicine}
-                            onChange={(e) => setSelectedMedicine(e.target.value)}
-                            className="border rounded p-2 w-full"
-                        >
-                            <option value="">Select medicine...</option>
-                            {availableOptions.length > 0 ? (
-                                availableOptions.map((med) => (
-                                    <option key={med.value} value={med.value}>
-                                        {med.label}
-                                    </option>
-                                ))
-                            ) : (
-                                <option disabled>No medicines available</option>
-                            )}
-                        </select>
+                        <Select
+                            options={availableOptions}
+                            value={
+                                selectedMedicine
+                                    ? availableOptions.find((opt) => opt.value === selectedMedicine)
+                                    : null
+                            }
+                            onChange={(option) => setSelectedMedicine(option ? option.value : "")}
+                            placeholder="Select medicine..."
+                            isClearable
+                            classNamePrefix="react-select"
+                        />
 
                         {/* Frequency numeric */}
                         <input
