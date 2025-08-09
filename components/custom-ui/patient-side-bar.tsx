@@ -15,10 +15,14 @@ const menus: Menu[] = [
 
 export function PatientSidebar() {
     const pathname = usePathname();
+    const navbarHeight = 64; // match TopNavBar height
 
     return (
-        <aside className="h-screen w-64 bg-gray-100 dark:bg-gray-900 border-r border-gray-300 dark:border-gray-700 p-4 fixed left-0 top-0">
-            <h2 className="text-lg font-semibold mb-4">Menus</h2>
+        <aside
+            className="w-64 bg-gray-100 dark:bg-gray-900 border-r border-gray-300 dark:border-gray-700 p-4 fixed left-0"
+            style={{ top: navbarHeight, height: `calc(100vh - ${navbarHeight}px)` }}
+        >
+            <h2 className="text-lg font-semibold mb-4">PAGES</h2>
             <nav className="space-y-1">
                 {menus.map((channel) => (
                     <Link
