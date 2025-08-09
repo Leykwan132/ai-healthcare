@@ -1,0 +1,284 @@
+# Prescription Instructions & AI-Powered Schedule Generation PRD
+
+## Overview
+This feature enables doctors to input natural language prescription instructions that are automatically parsed by AI to generate structured medication and activity schedules. The system supports both English and Malay languages, providing a seamless workflow for doctors to create comprehensive treatment plans that are automatically converted into actionable patient schedules.
+
+## Core Features
+
+### 1. Natural Language Prescription Input
+- **What it does**: Allows doctors to type prescription instructions in natural language (English/Malay)
+- **Why it's important**: Reduces cognitive load on doctors by allowing them to write instructions as they would naturally communicate
+- **How it works**: Text input field with language detection and validation
+
+### 2. AI-Powered Instruction Parsing
+- **What it does**: Uses OpenAI via Vercel AI SDK to parse natural language into structured schedule data
+- **Why it's important**: Automatically converts unstructured text into actionable, time-based schedules
+- **How it works**: LLM processes the input and returns structured JSON with medication schedules, activity schedules, and follow-up dates
+
+### 3. Schedule Review & Confirmation
+- **What it does**: Presents AI-generated schedules to doctors for review and editing
+- **Why it's important**: Ensures accuracy and allows for manual adjustments based on patient-specific needs
+- **How it works**: Interactive UI showing structured schedules with edit capabilities
+
+### 4. Database Integration
+- **What it does**: Saves confirmed prescription schedules to Supabase database
+- **Why it's important**: Persists treatment plans for patient access and tracking
+- **How it works**: Structured data storage with relationships to patients, doctors, and conversations
+
+## User Experience
+
+### User Personas
+1. **Doctor**: Primary user who creates prescription instructions and reviews AI-generated schedules
+2. **Patient**: Secondary user who receives and follows the generated schedules
+3. **System Administrator**: Manages the AI integration and system configuration
+
+### Key User Flows
+
+#### Doctor Flow
+1. Doctor navigates to prescription creation interface
+2. Doctor selects patient from existing patient list
+3. Doctor types natural language prescription instructions (English/Malay)
+4. System detects language and processes instructions via AI
+5. AI returns structured schedule with medications, activities, and follow-up date
+6. Doctor reviews generated schedule and makes any necessary edits
+7. Doctor confirms and saves the prescription schedule
+8. System stores schedule in database and notifies patient
+
+#### Patient Flow
+1. Patient receives notification of new prescription schedule
+2. Patient views structured schedule with clear medication and activity times
+3. Patient can set reminders and track adherence
+4. Patient can mark completed activities and medications
+
+### UI/UX Considerations
+- Clean, intuitive interface for prescription input
+- Clear visual representation of generated schedules
+- Easy editing capabilities for schedule adjustments
+- Mobile-responsive design for patient access
+- Accessibility compliance for healthcare standards
+
+## Technical Architecture
+
+### System Components
+
+#### Frontend Components
+1. **PrescriptionInputForm**: Natural language input with language detection
+2. **ScheduleReviewModal**: Interactive schedule review and editing interface
+3. **ScheduleDisplay**: Visual representation of medication and activity schedules
+4. **LanguageSelector**: Toggle between English and Malay
+
+#### Backend Services
+1. **PrescriptionParser**: AI service integration for instruction parsing
+2. **ScheduleGenerator**: Converts parsed data into structured schedules
+3. **DatabaseService**: Handles prescription and schedule storage
+4. **NotificationService**: Manages patient notifications
+
+#### API Endpoints
+1. `POST /api/prescriptions/parse` - Parse natural language instructions
+2. `POST /api/prescriptions/schedules` - Generate and store schedules
+3. `GET /api/prescriptions/{id}` - Retrieve prescription details
+4. `PUT /api/prescriptions/{id}` - Update prescription schedules
+
+### Data Models
+
+#### Prescription Model
+```typescript
+interface Prescription {
+  id: string;
+  patientId: string;
+  doctorId: string;
+  conversationId?: string;
+  originalInstructions: string;
+  language: 'en' | 'ms';
+  status: 'draft' | 'confirmed' | 'active' | 'completed';
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+#### Schedule Model
+```typescript
+interface Schedule {
+  id: string;
+  prescriptionId: string;
+  type: 'medication' | 'activity';
+  title: string;
+  description: string;
+  dosage?: string;
+  frequency: string;
+  startDate: Date;
+  endDate: Date;
+  times: string[]; // Array of time strings (e.g., ["08:00", "20:00"])
+  followUpDate?: Date;
+  status: 'active' | 'completed' | 'cancelled';
+}
+```
+
+#### ParsedInstruction Model
+```typescript
+interface ParsedInstruction {
+  medications: MedicationSchedule[];
+  activities: ActivitySchedule[];
+  followUpDate?: Date;
+  notes?: string;
+}
+
+interface MedicationSchedule {
+  name: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  timing: string;
+  instructions?: string;
+}
+
+interface ActivitySchedule {
+  name: string;
+  duration: string;
+  frequency: string;
+  timing: string;
+  instructions?: string;
+}
+```
+
+### Integrations
+1. **OpenAI API**: Via Vercel AI SDK for natural language processing
+2. **Supabase**: Database storage and real-time updates
+3. **Vercel AI SDK**: AI service integration and streaming
+4. **Date-fns**: Date manipulation and scheduling logic
+
+## Development Roadmap
+
+### Phase 1: Foundation (MVP)
+1. **Basic Prescription Input**
+   - Natural language input field
+   - Language detection (English/Malay)
+   - Basic validation and error handling
+
+2. **AI Integration**
+   - OpenAI API integration via Vercel AI SDK
+   - Basic instruction parsing to structured format
+   - Error handling for AI service failures
+
+3. **Schedule Generation**
+   - Convert parsed instructions to schedule format
+   - Basic time parsing and frequency handling
+   - Default follow-up date calculation
+
+4. **Database Schema**
+   - Create prescription and schedule tables
+   - Establish relationships with existing tables
+   - Basic CRUD operations
+
+### Phase 2: Enhanced Features
+1. **Advanced Parsing**
+   - Improved AI prompts for better accuracy
+   - Support for complex medication schedules
+   - Activity and exercise parsing
+   - Duration and frequency extraction
+
+2. **Schedule Review Interface**
+   - Interactive schedule review modal
+   - Edit capabilities for generated schedules
+   - Visual timeline representation
+   - Conflict detection and resolution
+
+3. **Patient Integration**
+   - Patient notification system
+   - Schedule display for patients
+   - Progress tracking and adherence monitoring
+
+### Phase 3: Advanced Features
+1. **Smart Scheduling**
+   - Conflict detection with existing schedules
+   - Optimal timing suggestions
+   - Integration with patient preferences
+   - Automated reminder system
+
+2. **Analytics and Reporting**
+   - Prescription effectiveness tracking
+   - Patient adherence analytics
+   - Doctor usage patterns
+   - System performance metrics
+
+3. **Multi-language Support**
+   - Enhanced Malay language support
+   - Translation capabilities
+   - Cultural considerations for different regions
+
+## Logical Dependency Chain
+
+### Foundation First
+1. **Database Schema**: Must be created before any data storage
+2. **AI Integration**: Required for instruction parsing
+3. **Basic Input Form**: Needed for user interaction
+4. **Parsing Logic**: Converts AI output to structured data
+
+### Quick Wins
+1. **Simple Schedule Display**: Show parsed schedules immediately
+2. **Basic Review Interface**: Allow doctors to see and edit schedules
+3. **Database Storage**: Save confirmed schedules
+
+### Iterative Improvements
+1. **Enhanced Parsing**: Improve AI prompts and accuracy
+2. **Advanced UI**: Better schedule visualization and editing
+3. **Patient Features**: Patient-facing schedule display
+4. **Analytics**: Track usage and effectiveness
+
+## Risks and Mitigations
+
+### Technical Challenges
+1. **AI Parsing Accuracy**
+   - **Risk**: AI may misinterpret complex instructions
+   - **Mitigation**: Implement review/confirmation workflow, improve prompts, add validation rules
+
+2. **Language Support**
+   - **Risk**: Malay language parsing may be less accurate
+   - **Mitigation**: Use specialized models, implement fallback mechanisms, user feedback loop
+
+3. **Schedule Conflicts**
+   - **Risk**: Generated schedules may conflict with existing patient schedules
+   - **Mitigation**: Implement conflict detection, provide resolution options
+
+### MVP Considerations
+1. **Scope Management**
+   - **Risk**: Feature creep may delay MVP
+   - **Mitigation**: Focus on core prescription parsing and basic schedule generation first
+
+2. **User Adoption**
+   - **Risk**: Doctors may prefer existing manual methods
+   - **Mitigation**: Provide clear value proposition, intuitive interface, training materials
+
+### Resource Constraints
+1. **AI API Costs**
+   - **Risk**: OpenAI API usage may become expensive
+   - **Mitigation**: Implement caching, optimize prompts, monitor usage
+
+2. **Development Complexity**
+   - **Risk**: Integration complexity may slow development
+   - **Mitigation**: Use existing patterns, leverage Vercel AI SDK, modular architecture
+
+## Appendix
+
+### Research Findings
+- Natural language processing in healthcare requires high accuracy
+- Multi-language support is essential for Malaysian healthcare market
+- Schedule automation significantly improves patient adherence
+- AI-assisted prescription creation reduces doctor workload
+
+### Technical Specifications
+- **Frontend**: Next.js 14 with TypeScript
+- **Backend**: Next.js API routes with Supabase
+- **AI**: OpenAI GPT-4 via Vercel AI SDK
+- **Database**: Supabase PostgreSQL
+- **UI**: Tailwind CSS with shadcn/ui components
+- **State Management**: React hooks and context
+- **Validation**: Zod schema validation
+- **Testing**: Jest and React Testing Library
+
+### Security Considerations
+- HIPAA compliance for patient data
+- Secure AI API key management
+- Data encryption at rest and in transit
+- Audit logging for prescription changes
+- Access control and authentication
