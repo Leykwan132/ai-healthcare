@@ -1,32 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createOpenAICompletion, AIError } from '@/lib/ai';
+import { createAICompletion, AIError, AIProvider } from '@/lib/ai';
 import { z } from 'zod';
 
 // Schema for prescription parsing request
 const prescriptionRequestSchema = z.object({
-  instructions: z.string().min(1, 'Instructions are required'),
+  instruction: z.string().min(1, 'Instruction is required'),
+  provider: z.enum(['openai', 'groq']).optional().default('openai'),
   language: z.enum(['en', 'ms']).optional().default('en'),
   patientId: z.string().uuid().optional(),
   doctorId: z.string().uuid().optional(),
 });
 
-// Schema for parsed prescription response
-const parsedPrescriptionSchema = z.object({
-  medications: z.array(z.object({
-    name: z.string(),
-    dosage: z.string(),
-    frequency: z.string(),
-    duration: z.string().optional(),
-    instructions: z.string().optional(),
-  })),
-  activities: z.array(z.object({
-    type: z.string(),
-    description: z.string(),
-    frequency: z.string().optional(),
-    duration: z.string().optional(),
-  })).optional(),
-  followUpDate: z.string().optional(),
-  notes: z.string().optional(),
+// Schema for single parsed instruction (matching the UI interface)
+const parsedInstructionSchema = z.object({
+  medicationName: z.string(),
+  dosage: z.string(),
+  frequency: z.string(),
+  duration: z.string(),
+  instructions: z.string(),
+  route: z.string(),
+  quantity: z.string(),
+  refills: z.string(),
 });
 
 export async function POST(request: NextRequest) {
@@ -42,51 +36,49 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { instructions, language, patientId, doctorId } = validation.data;
+    const { instruction, provider, language, patientId, doctorId } = validation.data;
 
     // Create the prompt for prescription parsing
-    const prompt = `Please parse the following prescription instructions and return a structured JSON response.
+    const prompt = `You are a medical prescription parser. Analyze the provided prescription text and extract structured medication information.
 
-Instructions: ${instructions}
+INPUT:
+Prescription text: ${instruction}
 Language: ${language === 'ms' ? 'Malay' : 'English'}
 
-Please extract the following information and return it as a valid JSON object:
-1. Medications: name, dosage, frequency, duration (if specified), special instructions
-2. Activities: type, description, frequency, duration (if specified)
-3. Follow-up date (if mentioned)
-4. Additional notes
-
-Return the response in this exact JSON format:
+OUTPUT FORMAT (JSON):
 {
-  "medications": [
-    {
-      "name": "medication name",
-      "dosage": "dosage amount",
-      "frequency": "how often",
-      "duration": "how long",
-      "instructions": "special instructions"
-    }
-  ],
-  "activities": [
-    {
-      "type": "activity type",
-      "description": "activity description",
-      "frequency": "how often",
-      "duration": "how long"
-    }
-  ],
-  "followUpDate": "YYYY-MM-DD",
-  "notes": "additional notes"
+  "medicationName": "string - exact medication name",
+  "dosage": "string - dosage amount and unit",
+  "frequency": "string - how often to take",
+  "duration": "string - how long to take",
+  "instructions": "string - additional instructions",
+  "route": "string - how to take (oral, topical, etc.)",
+  "quantity": "string - total quantity prescribed",
+  "refills": "string - number of refills allowed"
 }
 
-Only return the JSON object, no additional text or explanations.`;
+PARSING RULES:
+1. Extract exact medication names (brand/generic)
+2. Parse dosage amounts with units (mg, ml, units, etc.)
+3. Identify frequency patterns (daily, twice daily, as needed, etc.)
+4. Determine duration from phrases like "for 7 days" or "until finished"
+5. Capture special instructions ("with food", "before bed", etc.)
+6. Identify route of administration
+7. Calculate total quantity when possible
+8. Note refill information
 
-    // Call OpenAI API
-    const response = await createOpenAICompletion(
+If information is unclear, return "unknown" for that field.
+If multiple medications are mentioned, focus on the first/primary medication.
+
+Return ONLY the JSON object, no additional text.`;
+
+    // Call AI API with the selected provider
+    const response = await createAICompletion(
       prompt,
-      'gpt-4',
+      provider as AIProvider,
+      provider === 'openai' ? 'gpt-4o-mini' : 'llama3-8b-8192',
       0.3, // Lower temperature for more consistent parsing
-      2000
+      1500
     );
 
     // Try to parse the JSON response
@@ -108,7 +100,7 @@ Only return the JSON object, no additional text or explanations.`;
     }
 
     // Validate the parsed response
-    const responseValidation = parsedPrescriptionSchema.safeParse(parsedResponse);
+    const responseValidation = parsedInstructionSchema.safeParse(parsedResponse);
     if (!responseValidation.success) {
       return NextResponse.json(
         { 
@@ -122,8 +114,9 @@ Only return the JSON object, no additional text or explanations.`;
 
     return NextResponse.json({
       success: true,
-      data: responseValidation.data,
+      parsedInstruction: responseValidation.data,
       metadata: {
+        provider,
         language,
         patientId,
         doctorId,

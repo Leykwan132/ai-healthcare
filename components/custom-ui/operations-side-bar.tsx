@@ -10,6 +10,7 @@ type Menu = {
 };
 
 const menus: Menu[] = [
+    { name: "AI Prompt Testing", href: "/operations/prompt" },
     { name: "Users", href: "/operations/users" },
     { name: "Doctors", href: "/operations/doctors" },
     { name: "Patients", href: "/operations/patients" },
@@ -32,7 +33,7 @@ export function OperationsSidebar() {
             className="w-64 bg-gray-100 dark:bg-gray-900 border-r border-gray-300 dark:border-gray-700 p-4 fixed left-0"
             style={{ top: navbarHeight, height: `calc(100vh - ${navbarHeight}px)` }}
         >
-            <h2 className="text-lg font-semibold mb-4">DATABASE TABLES</h2>
+            <h2 className="text-lg font-semibold mb-4">OPERATIONS & TESTING</h2>
             <nav className="space-y-1">
                 {menus.map((menu) => (
                     <Link
