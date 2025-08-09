@@ -1,0 +1,40 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+
+type Menu = {
+    name: string;
+    href: string;
+};
+
+const menus: Menu[] = [
+    { name: "Home", href: "/patients" },
+];
+
+export function PatientSidebar() {
+    const pathname = usePathname();
+
+    return (
+        <aside className="h-screen w-64 bg-gray-100 dark:bg-gray-900 border-r border-gray-300 dark:border-gray-700 p-4 fixed left-0 top-0">
+            <h2 className="text-lg font-semibold mb-4">Menus</h2>
+            <nav className="space-y-1">
+                {menus.map((channel) => (
+                    <Link
+                        key={channel.href}
+                        href={channel.href}
+                        className={cn(
+                            "block px-3 py-2 rounded-md transition-colors",
+                            pathname === channel.href
+                                ? "bg-gray-300 dark:bg-gray-700 font-medium"
+                                : "hover:bg-gray-200 dark:hover:bg-gray-800"
+                        )}
+                    >
+                        {channel.name}
+                    </Link>
+                ))}
+            </nav>
+        </aside>
+    );
+}

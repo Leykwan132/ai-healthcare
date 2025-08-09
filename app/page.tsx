@@ -40,20 +40,11 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-6 mt-8">
             <button
               onClick={() => {
-                window.location.href = "/schedule-planning";
-              }}
-              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500 transition px-6 py-3 rounded-xl text-lg font-semibold shadow-lg"
-            >
-              Doctor
-            </button>
-
-            <button
-              onClick={() => {
-                window.location.href = "/home";
+                window.location.href = "/patients";
               }}
               className="bg-green-600 hover:bg-green-700 dark:bg-green-400 dark:hover:bg-green-500 transition px-6 py-3 rounded-xl text-lg font-semibold shadow-lg"
             >
-              Patient
+              Immerse
             </button>
           </div>
         </div>

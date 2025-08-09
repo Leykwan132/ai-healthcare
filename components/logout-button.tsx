@@ -1,8 +1,15 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { User } from "lucide-react";
 
 export function LogoutButton() {
   const router = useRouter();
@@ -10,8 +17,41 @@ export function LogoutButton() {
   const logout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/auth/login");
+    router.push("/");
+    router.refresh();
   };
 
-  return <Button onClick={logout}>Logout</Button>;
+  const switchToDoctor = async () => {
+    window.location.href = "/doctors";
+  };
+
+  const switchToPatient = async () => {
+    window.location.href = "/patients";
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full"
+        >
+          <User className="h-5 w-5" />
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" className="w-32">
+        <DropdownMenuItem onClick={switchToDoctor}>
+          Doctor
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={switchToPatient}>
+          Patient
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={logout}>
+          Logout
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }

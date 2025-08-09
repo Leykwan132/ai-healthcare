@@ -55,17 +55,6 @@ export default function ThemeToggle() {
             )}
 
             <div className="flex space-x-2">
-                {/* Hide logout button on homepage `/` */}
-                {pathname !== '/' && (
-                    <button
-                        onClick={handleLogout}
-                        className={buttonClass}
-                        title="Logout"
-                    >
-                        🚪
-                    </button>
-                )}
-
                 <button
                     onClick={() => setOpen(!open)}
                     className={buttonClass}

@@ -4,6 +4,8 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
 import ThemeToggle from "@/components/custom-ui/accessibility";
+import { PatientTopNavBar } from "@/components/custom-ui/patient-top-nav-bar";
+import { DoctorTopNavBar } from "@/components/custom-ui/doctor-top-nav-bar";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -35,6 +37,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <DoctorTopNavBar />
           {children}
           <ThemeToggle />
         </ThemeProvider>
