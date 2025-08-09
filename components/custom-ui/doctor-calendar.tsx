@@ -6,6 +6,7 @@ import moment from "moment";
 import axios from "axios";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { DoctorEventModal } from "./doctor-event-modal";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
@@ -34,8 +35,36 @@ const sampleEvents = [
 ];
 
 
-export function CalendarView({ onSelectEvent }: { onSelectEvent: (event: any) => void }) {
-  const [events] = useState(sampleEvents);  // hard-code
+
+interface CalendarViewProps {
+  events?: any[];
+  patientLogs?: Record<number, { isLogged: boolean; photo?: string; timestamp?: string }>;
+  onEventClick?: (event: any) => void;
+}
+
+export function CalendarView({
+  events: eventsProp,
+  patientLogs: patientLogsProp,
+  onEventClick
+}: CalendarViewProps = {}) {
+  const [events] = useState(eventsProp || sampleEvents);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const effectivePatientLogs = patientLogsProp !== undefined ? patientLogsProp : {};
+
+  const handleSelectEvent = (event: any) => {
+    if (onEventClick) {
+      onEventClick(event);
+    } else {
+      setSelectedEvent(event);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(null);
+  };
 
   // const [events, setEvents] = useState<any[]>([]);
   // useEffect(() => {
@@ -59,23 +88,41 @@ export function CalendarView({ onSelectEvent }: { onSelectEvent: (event: any) =>
   // }, []);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl">Calendar</CardTitle>
-        <CardDescription>Manage patients' schedule</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="h-[600px]">
-          <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            onSelectEvent={onSelectEvent}
-            style={{ height: "100%" }}
-          />
-        </div>
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">Calendar</CardTitle>
+          <CardDescription>Manage patients' schedule</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[600px]">
+            <Calendar
+              localizer={localizer}
+              events={events}
+              startAccessor="start"
+              endAccessor="end"
+              onSelectEvent={handleSelectEvent}
+              style={{ height: "100%" }}
+              eventPropGetter={(event) => {
+                const isLogged = effectivePatientLogs[event.id]?.isLogged && effectivePatientLogs[event.id]?.photo;
+                return isLogged
+                  ? { style: { backgroundColor: '#bbf7d0', color: '#166534', borderRadius: 6, border: '1px solid #22c55e' } }
+                  : {};
+              }}
+            />
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Only show modal if not using external event click handler */}
+      {!onEventClick && (
+        <DoctorEventModal
+          event={selectedEvent}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          patientLogs={effectivePatientLogs}
+        />
+      )}
+    </>
   );
 }
