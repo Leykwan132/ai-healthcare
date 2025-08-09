@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "../logout-button";
-import { ProfileButton } from "../profile-button";
+import { LoginButton } from "../login-button";
 
 export async function OperationsTopNavBar() {
   const supabase = await createClient();
@@ -14,8 +14,8 @@ export async function OperationsTopNavBar() {
       {/* Left section (logo stays flush left) */}
       <div className="flex items-center space-x-2 pl-4">
         <Link href="/operations" className="flex items-center space-x-2">
-          <img src="/logo.svg" alt="Logo" className="h-8 w-8" />
-          <span className="font-semibold">AI Healthcare - Operations</span>
+          <img src="/Vertica.gif" alt="Logo" className="h-8 w-8 rounded-full object-cover" />
+          <span className="font-semibold">MediBuddyAI - Operations</span>
         </Link>
       </div>
 
@@ -28,8 +28,8 @@ export async function OperationsTopNavBar() {
           </>
         ) : (
           <>
-            <span className="text-sm">Developer</span>
-            <ProfileButton />
+            <span className="text-sm">Developer mode</span>
+            <LoginButton />
           </>
         )}
       </div>

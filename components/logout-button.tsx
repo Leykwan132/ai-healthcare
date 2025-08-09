@@ -35,7 +35,7 @@ export function LogoutButton() {
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full"
+          className="h-11 w-11 rounded-full object-cover"
         >
           <User className="h-5 w-5" />
         </Button>
