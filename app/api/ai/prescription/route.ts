@@ -1,30 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createOpenAICompletion, AIError } from '@/lib/ai';
+import { createAICompletion, AIError, AIProvider } from '@/lib/ai';
 import { z } from 'zod';
 
 // Schema for prescription parsing request
 const prescriptionRequestSchema = z.object({
-  instructions: z.string().min(1, 'Instructions are required'),
+  instruction: z.string().min(1, 'Instruction is required'),
+  provider: z.enum(['openai', 'groq']).optional().default('openai'),
   language: z.enum(['en', 'ms']).optional().default('en'),
   patientId: z.string().uuid().optional(),
   doctorId: z.string().uuid().optional(),
 });
 
-// Schema for parsed prescription response
-const parsedPrescriptionSchema = z.object({
+// Schema for parsed instruction response (matching database schema)
+const parsedInstructionSchema = z.object({
   medications: z.array(z.object({
     name: z.string(),
     dosage: z.string(),
     frequency: z.string(),
-    duration: z.string().optional(),
-    instructions: z.string().optional(),
+    duration: z.string(),
+    timing: z.string(),
+    instructions: z.string(),
   })),
   activities: z.array(z.object({
-    type: z.string(),
-    description: z.string(),
-    frequency: z.string().optional(),
-    duration: z.string().optional(),
-  })).optional(),
+    name: z.string(),
+    duration: z.string(),
+    frequency: z.string(),
+    timing: z.string(),
+    instructions: z.string(),
+  })),
   followUpDate: z.string().optional(),
   notes: z.string().optional(),
 });
@@ -42,51 +45,84 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { instructions, language, patientId, doctorId } = validation.data;
+    const { instruction, provider, language, patientId, doctorId } = validation.data;
 
-    // Create the prompt for prescription parsing
-    const prompt = `Please parse the following prescription instructions and return a structured JSON response.
+    // Create the prompt for prescription parsing (matching database schema)
+    const prompt = `You are a medical prescription parser. Analyze the provided prescription text and extract structured information.
 
-Instructions: ${instructions}
+INPUT:
+Prescription text: ${instruction}
 Language: ${language === 'ms' ? 'Malay' : 'English'}
 
-Please extract the following information and return it as a valid JSON object:
-1. Medications: name, dosage, frequency, duration (if specified), special instructions
-2. Activities: type, description, frequency, duration (if specified)
-3. Follow-up date (if mentioned)
-4. Additional notes
-
-Return the response in this exact JSON format:
+OUTPUT FORMAT (JSON):
 {
   "medications": [
     {
-      "name": "medication name",
-      "dosage": "dosage amount",
-      "frequency": "how often",
-      "duration": "how long",
-      "instructions": "special instructions"
+      "name": "string - exact medication name",
+      "dosage": "string - dosage amount and unit",
+      "frequency": "string - how often to take",
+      "duration": "string - how long to take (ongoing, 7 days, etc.)",
+      "timing": "string - when to take (morning, evening, before meals, etc.)",
+      "instructions": "string - additional instructions"
     }
   ],
   "activities": [
     {
-      "type": "activity type",
-      "description": "activity description",
-      "frequency": "how often",
-      "duration": "how long"
+      "name": "string - activity name",
+      "duration": "string - how long to do activity",
+      "frequency": "string - how often to do activity",
+      "timing": "string - when to do activity",
+      "instructions": "string - additional activity instructions"
     }
   ],
-  "followUpDate": "YYYY-MM-DD",
-  "notes": "additional notes"
+  "followUpDate": "string - follow-up date in ISO format (optional)",
+  "notes": "string - additional notes or instructions (optional)"
 }
 
-Only return the JSON object, no additional text or explanations.`;
+PARSING RULES:
+1. Extract ALL medications mentioned in the text
+2. For each medication: name, dosage, frequency, duration, timing, special instructions
+3. Extract activities like exercise, diet changes, monitoring tasks
+4. For each activity: name, duration, frequency, timing, instructions
+5. Look for follow-up appointments or check-up dates
+6. Include general notes or warnings
+7. Use "ongoing" for duration if no end date specified
+8. If information is unclear, return "unknown" for that field
 
-    // Call OpenAI API
-    const response = await createOpenAICompletion(
+EXAMPLES:
+
+Example 1:
+Input: "Take 1 tablet of Amlodipine 5mg once daily in the morning. Light exercise 30 minutes daily."
+Output:
+{
+  "medications": [{
+    "name": "Amlodipine",
+    "dosage": "5mg",
+    "frequency": "once daily",
+    "duration": "ongoing",
+    "timing": "morning",
+    "instructions": "Take 1 tablet"
+  }],
+  "activities": [{
+    "name": "Light Exercise",
+    "duration": "30 minutes",
+    "frequency": "daily",
+    "timing": "anytime",
+    "instructions": "Walking or light stretching"
+  }],
+  "followUpDate": "",
+  "notes": ""
+}
+
+Return ONLY the JSON object, no additional text.`;
+
+    // Call AI API with the selected provider
+    const response = await createAICompletion(
       prompt,
-      'gpt-4',
+      provider as AIProvider,
+      provider === 'openai' ? 'gpt-4o-mini' : 'llama3-8b-8192',
       0.3, // Lower temperature for more consistent parsing
-      2000
+      1500
     );
 
     // Try to parse the JSON response
@@ -108,7 +144,7 @@ Only return the JSON object, no additional text or explanations.`;
     }
 
     // Validate the parsed response
-    const responseValidation = parsedPrescriptionSchema.safeParse(parsedResponse);
+    const responseValidation = parsedInstructionSchema.safeParse(parsedResponse);
     if (!responseValidation.success) {
       return NextResponse.json(
         { 
@@ -122,8 +158,9 @@ Only return the JSON object, no additional text or explanations.`;
 
     return NextResponse.json({
       success: true,
-      data: responseValidation.data,
+      parsedInstruction: responseValidation.data,
       metadata: {
+        provider,
         language,
         patientId,
         doctorId,
