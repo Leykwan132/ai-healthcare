@@ -28,11 +28,11 @@ export async function POST(
 
         // update the document review
         const { data: document, error } = await supabase
-            .from('reviewDocuments')
+            .from('reviewdocuments')
             .update({
                 isReviewed,
             })
-            .eq('patientId', patientId)
+            .eq('patientid', patientId)
             .select('*')
             .single();
 

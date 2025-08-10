@@ -11,9 +11,9 @@ export async function GET(
 
         // Build the query
         let query = supabase
-            .from('reviewDocuments')
+            .from('reviewdocuments')
             .select('*')
-            .eq('patientId', patientId)
+            .eq('patientid', patientId)
             .order('created_at', { ascending: false });
 
         // Execute the query
@@ -27,7 +27,26 @@ export async function GET(
             );
         }
 
-        return NextResponse.json(documents || []);
+        // Parse the content JSON string for each document
+        const documentsWithParsedContent = documents?.map(document => {
+            let parsedContent = null;
+            if (document.content) {
+                try {
+                    parsedContent = JSON.parse(document.content);
+                } catch (parseError) {
+                    console.error('Error parsing content JSON for document:', document.id, parseError);
+                    // If parsing fails, keep the original content as string
+                    parsedContent = document.content;
+                }
+            }
+
+            return {
+                ...document,
+                content: parsedContent
+            };
+        }) || [];
+
+        return NextResponse.json(documentsWithParsedContent);
 
     } catch (error) {
         console.error('Unexpected error:', error);
