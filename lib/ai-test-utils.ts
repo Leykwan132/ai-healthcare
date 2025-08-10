@@ -19,6 +19,7 @@ export async function runAIConfigurationTest(): Promise<AITestResult> {
     timestamp: new Date().toISOString()
   };
 
+  console.log('test')
   try {
     // Test 1: Check if API key is configured
     try {
@@ -71,13 +72,13 @@ export function getAITestRecommendations(testResult: AITestResult): string[] {
 }
 
 export function formatAITestResult(testResult: AITestResult): string {
-  const status = testResult.apiKeyConfigured && testResult.apiKeyValid && testResult.connectionWorking 
-    ? '✅ PASSED' 
+  const status = testResult.apiKeyConfigured && testResult.apiKeyValid && testResult.connectionWorking
+    ? '✅ PASSED'
     : '❌ FAILED';
 
   let output = `AI Configuration Test ${status}\n`;
   output += `Timestamp: ${testResult.timestamp}\n\n`;
-  
+
   output += `Test Results:\n`;
   output += `- API Key Configured: ${testResult.apiKeyConfigured ? '✅' : '❌'}\n`;
   output += `- API Key Valid: ${testResult.apiKeyValid ? '✅' : '❌'}\n`;
