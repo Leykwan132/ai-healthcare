@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Bell, X, Clock } from "lucide-react";
+import { Bell, Clock } from "lucide-react";
 import './styles/reminder-popup.css';
 
 interface ReminderPopupProps {
@@ -23,11 +23,12 @@ export function ReminderPopup({
 }: ReminderPopupProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [soundInterval, setSoundInterval] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (isOpen && event) {
-      // Play notification sound
-      playNotificationSound();
+      // Start playing notification sound in a loop
+      startNotificationLoop();
       
       // Request notification permission if not granted
       if (Notification.permission === 'default') {
@@ -43,12 +44,46 @@ export function ReminderPopup({
         });
       }
     }
+
+    // Cleanup when component unmounts or popup closes
+    return () => {
+      stopNotificationLoop();
+    };
   }, [isOpen, event]);
+
+  const startNotificationLoop = () => {
+    setIsPlaying(true);
+    
+    // Play sound immediately
+    playNotificationSound();
+    
+    // Set up interval to repeat the sound every 3 seconds
+    const interval = setInterval(() => {
+      playNotificationSound();
+    }, 3000);
+    
+    setSoundInterval(interval);
+  };
+
+  const stopNotificationLoop = () => {
+    setIsPlaying(false);
+    
+    // Clear the interval
+    if (soundInterval) {
+      clearInterval(soundInterval);
+      setSoundInterval(null);
+    }
+    
+    // Close audio context
+    if (audioContext && audioContext.state !== 'closed') {
+      audioContext.close();
+      setAudioContext(null);
+    }
+  };
 
   const playNotificationSound = async () => {
     try {
-      setIsPlaying(true);
-      console.log('Attempting to play notification sound...');
+      console.log('Playing notification sound...');
       
       // Create a simple beep sound using Web Audio API
       const context = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -58,69 +93,53 @@ export function ReminderPopup({
         await context.resume();
       }
       
-      setAudioContext(context);
+      // Only update audioContext if it's not already set
+      if (!audioContext) {
+        setAudioContext(context);
+      }
+      
       const oscillator = context.createOscillator();
       const gainNode = context.createGain();
       
       oscillator.connect(gainNode);
       gainNode.connect(context.destination);
       
+      // Create a more attention-grabbing sound pattern
       oscillator.frequency.setValueAtTime(800, context.currentTime);
-      oscillator.frequency.setValueAtTime(600, context.currentTime + 0.1);
+      oscillator.frequency.setValueAtTime(1000, context.currentTime + 0.1);
       oscillator.frequency.setValueAtTime(800, context.currentTime + 0.2);
+      oscillator.frequency.setValueAtTime(1000, context.currentTime + 0.3);
       
       gainNode.gain.setValueAtTime(0.3, context.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.6);
       
       oscillator.start(context.currentTime);
-      oscillator.stop(context.currentTime + 0.5);
+      oscillator.stop(context.currentTime + 0.6);
       
-      console.log('Sound should be playing now...');
-      
-      setTimeout(() => {
-        setIsPlaying(false);
-        if (context.state !== 'closed') {
-          context.close();
-        }
-        setAudioContext(null);
-        console.log('Sound playback completed');
-      }, 500);
+      console.log('Sound playing...');
     } catch (error) {
       console.log('Could not play notification sound:', error);
-      setIsPlaying(false);
     }
   };
 
 
   const handleSnooze = (minutes: number) => {
-    // Stop any ongoing sounds
-    if (audioContext && audioContext.state !== 'closed') {
-      audioContext.close();
-    }
-    setIsPlaying(false);
-    setAudioContext(null);
+    // Stop the notification loop
+    stopNotificationLoop();
     onSnooze?.(minutes);
     onClose();
   };
 
   const handleProceed = () => {
-    // Stop any ongoing sounds
-    if (audioContext && audioContext.state !== 'closed') {
-      audioContext.close();
-    }
-    setIsPlaying(false);
-    setAudioContext(null);
+    // Stop the notification loop
+    stopNotificationLoop();
     onProceed?.();
     onClose();
   };
 
   const handleDismiss = () => {
-    // Stop any ongoing sounds
-    if (audioContext && audioContext.state !== 'closed') {
-      audioContext.close();
-    }
-    setIsPlaying(false);
-    setAudioContext(null);
+    // Stop the notification loop
+    stopNotificationLoop();
     onClose();
   };
 
@@ -130,14 +149,9 @@ export function ReminderPopup({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn">
       <Card className="w-96 bg-white shadow-2xl animate-slideUp">
         <CardHeader className="bg-blue-500 text-white">
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Bell className={`w-6 h-6 ${isPlaying ? 'animate-bounce' : ''}`} />
-              Medication Reminder
-            </div>
-            <Button variant="ghost" size="sm" onClick={onClose} className="text-white hover:bg-blue-600">
-              <X className="w-4 h-4" />
-            </Button>
+          <CardTitle className="flex items-center gap-2">
+            <Bell className={`w-6 h-6 ${isPlaying ? 'animate-bounce' : ''}`} />
+            Medication Reminder
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
