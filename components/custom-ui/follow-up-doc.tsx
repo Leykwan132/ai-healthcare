@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Button } from "../ui/button";
@@ -9,34 +9,104 @@ interface FollowUpPageProps {
     params: { id: string };
 }
 
+interface Question {
+    question: string;
+    answer: string;
+}
+
+interface Patient {
+    id: string;
+    patientName: string;
+    illness: string;
+    prescription: string;
+    completedPrescription: boolean;
+    readyForReview: boolean;
+    questions: Question[];
+    aiSuggestedScore?: number;
+}
+
 export default function FollowUpPage({ params }: FollowUpPageProps) {
     const { id } = params;
-
-    const patient = {
-        id,
-        patientName: id === "1" ? "Alice Smith" : "Unknown Patient",
-        illness: "Flu",
-        prescription: "Tamiflu",
-        completedPrescription: true,
-        readyForReview: true,
-        symptoms: [
-            { symptom: "Fever", result: "Yes" },
-            { symptom: "Cough", result: "Yes" },
-            { symptom: "Fatigue", result: "No" },
-        ],
-    };
+    const [patient, setPatient] = useState<Patient | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const [showModal, setShowModal] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState<"positive" | "negative" | null>(null);
 
+    // Fetch patient data from API
+    useEffect(() => {
+        const fetchPatientData = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const apiBase = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+                const apiKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY || "";
+                const response = await fetch(
+                    `${apiBase}/rest/v1/reviewdocuments?patientid=eq.${id}`,
+                    {
+                        headers: {
+                            apikey: apiKey,
+                            Authorization: `Bearer ${apiKey}`,
+                        },
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch patient data: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                if (!data.length) {
+                    setPatient(null);
+                    return;
+                }
+
+                const record = data[0];
+
+                // Parse JSON inside `content`
+                let parsedContent;
+                try {
+                    parsedContent = JSON.parse(record.content);
+                } catch (err) {
+                    throw new Error("Invalid content format from API");
+                }
+
+                const patientData: Patient = {
+                    id: record.patientid,
+                    patientName: "Unknown", // Replace if you have real name
+                    illness: "",
+                    prescription: "",
+                    completedPrescription: false,
+                    readyForReview: false,
+                    aiSuggestedScore: parsedContent.ai_suggested_score,
+                    questions: parsedContent.qa_pairs.map((qa: any) => ({
+                        question: qa.question,
+                        answer: qa.answer,
+                    })),
+                };
+
+                setPatient(patientData);
+            } catch (err: any) {
+                setError(err.message || "Unknown error");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPatientData();
+    }, [id]);
+
     const exportPDF = () => {
+        if (!patient) return;
+
         const doc = new jsPDF();
         doc.text(`Patient Review - ${patient.patientName}`, 14, 10);
 
-        const tableData = patient.symptoms.map((s) => [s.symptom, s.result]);
+        const tableData = patient.questions.map((s) => [s.question, s.answer]);
 
         autoTable(doc, {
-            head: [["Symptom", "Result"]],
+            head: [["Question", "Answer"]],
             body: tableData,
             startY: 20,
         });
@@ -50,10 +120,9 @@ export default function FollowUpPage({ params }: FollowUpPageProps) {
     };
 
     const handleConfirm = async () => {
-        if (!selectedStatus) return;
+        if (!selectedStatus || !patient) return;
 
         try {
-            // Replace with actual API call
             alert(`Patient marked as ${selectedStatus} successfully!`);
         } catch (error) {
             alert("Failed to mark patient status.");
@@ -69,16 +138,18 @@ export default function FollowUpPage({ params }: FollowUpPageProps) {
         setSelectedStatus(null);
     };
 
+    if (loading) return <div className="p-6">Loading patient data...</div>;
+    if (error) return <div className="p-6 text-red-600">Error: {error}</div>;
+    if (!patient) return <div className="p-6">No patient data found.</div>;
+
     return (
         <div className="p-6 space-y-6 relative">
             {/* Title and Export button */}
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">
-                    Patient Review - {patient.patientName}
-                </h1>
+                <h1 className="text-2xl font-bold">Patient Review - {patient.patientName}</h1>
                 <Button
                     onClick={exportPDF}
-                    className="bg-blue-600  hover:bg-blue-700 transition text-white"
+                    className="bg-blue-600 hover:bg-blue-700 transition text-white"
                 >
                     Export
                 </Button>
@@ -88,15 +159,15 @@ export default function FollowUpPage({ params }: FollowUpPageProps) {
             <table className="table-auto w-full border-collapse border border-gray-400">
                 <thead>
                     <tr className="bg-gray-200">
-                        <th className="border border-gray-400 px-4 py-2">Symptom</th>
-                        <th className="border border-gray-400 px-4 py-2">Result</th>
+                        <th className="border border-gray-400 px-4 py-2">Question</th>
+                        <th className="border border-gray-400 px-4 py-2">Answer</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {patient.symptoms.map((s, idx) => (
+                    {patient.questions.map((s, idx) => (
                         <tr key={idx}>
-                            <td className="border border-gray-400 px-4 py-2">{s.symptom}</td>
-                            <td className="border border-gray-400 px-4 py-2">{s.result}</td>
+                            <td className="border border-gray-400 px-4 py-2">{s.question}</td>
+                            <td className="border border-gray-400 px-4 py-2">{s.answer}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -111,7 +182,7 @@ export default function FollowUpPage({ params }: FollowUpPageProps) {
                     Positive
                 </Button>
                 <Button
-                    onClick={() => handleOpenModal("positive")}
+                    onClick={() => handleOpenModal("negative")}
                     className="bg-red-600 hover:bg-red-700 transition text-white"
                 >
                     Negative
@@ -130,13 +201,13 @@ export default function FollowUpPage({ params }: FollowUpPageProps) {
                         <div className="flex justify-end gap-4">
                             <Button
                                 onClick={handleConfirm}
-                                className="bg-blue-600  hover:bg-blue-700 transition text-white"
+                                className="bg-blue-600 hover:bg-blue-700 transition text-white"
                             >
                                 Confirm
                             </Button>
                             <Button
                                 onClick={handleCancel}
-                                className="bg-gray-700  hover:bg-gray-300 transition text-white"
+                                className="bg-gray-700 hover:bg-gray-300 transition text-white"
                             >
                                 Cancel
                             </Button>
