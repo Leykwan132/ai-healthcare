@@ -11,6 +11,7 @@ type Menu = {
 
 const menus: Menu[] = [
     { name: "AI Prompt Testing", href: "/operations/prompt" },
+    { name: "Appointments & Schedule", href: "/operations/appointments" },
     { name: "Users", href: "/operations/users" },
     { name: "Doctors", href: "/operations/doctors" },
     { name: "Patients", href: "/operations/patients" },

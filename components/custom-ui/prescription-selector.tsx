@@ -4,10 +4,15 @@ import React, { useState } from "react";
 import Select from "react-select";
 
 const prescriptionOptions = [
+    { value: "Novorapid", label: "Novorapid" },
+    { value: "Metformin", label: "Metformin" },
     { value: "Paracetamol", label: "Paracetamol" },
     { value: "Ibuprofen", label: "Ibuprofen" },
     { value: "Amoxicillin", label: "Amoxicillin" },
     { value: "Cough Syrup", label: "Cough Syrup" },
+    { value: "Lisinopril", label: "Lisinopril" },
+    { value: "Ventolin", label: "Ventolin" },
+    { value: "Simvastatin", label: "Simvastatin" },
 ];
 
 interface Prescription {

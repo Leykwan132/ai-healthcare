@@ -69,13 +69,28 @@ interface ParseResponse {
   processingTime?: number;
 }
 
+interface SaveResponse {
+  success: boolean;
+  prescriptionId?: string;
+  message?: string;
+  error?: string;
+  metadata?: {
+    medicationsCount: number;
+    activitiesCount: number;
+    scheduleEventsCount: number;
+    provider: string;
+    timestamp: string;
+  };
+}
+
 export default function PromptTestPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ParseResponse | null>(null);
   const [schedule, setSchedule] = useState<ScheduleResponse | null>(null);
-  const [provider, setProvider] = useState<'openai' | 'groq'>('openai');
+  const [provider, setProvider] = useState<'openai' | 'groq'>('groq');
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [saveResponse, setSaveResponse] = useState<SaveResponse | null>(null);
 
   const samplePrescriptions = [
     "Take 1 tablet of Amlodipine 5mg once daily in the morning. Light exercise 30 minutes daily.",
@@ -171,10 +186,57 @@ export default function PromptTestPage() {
     }
   };
 
+  const saveToDatabase = async () => {
+    if (!result?.data || !schedule?.events || !input.trim()) return;
+
+    setLoading(true);
+    setSaveResponse(null);
+
+    try {
+      const response = await fetch('/api/store-parsed-results', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          parsedInstruction: result.data,
+          scheduleEvents: schedule.events,
+          originalInstruction: input,
+          startDate: startDate,
+          provider: provider
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setSaveResponse({
+          success: true,
+          prescriptionId: data.prescriptionId,
+          message: data.message,
+          metadata: data.metadata
+        });
+      } else {
+        setSaveResponse({
+          success: false,
+          error: data.error || 'Failed to save to database'
+        });
+      }
+    } catch (error) {
+      setSaveResponse({
+        success: false,
+        error: error instanceof Error ? error.message : 'Network error while saving'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const clearAll = () => {
     setInput("");
     setResult(null);
     setSchedule(null);
+    setSaveResponse(null);
   };
 
   return (
@@ -462,6 +524,17 @@ export default function PromptTestPage() {
                   </div>
                 </div>
 
+                {/* Save to Database Button */}
+                <div className="border-t pt-4">
+                  <Button 
+                    onClick={saveToDatabase}
+                    disabled={loading || !result?.data || !schedule?.events}
+                    className="w-full bg-green-600 hover:bg-green-700"
+                  >
+                    {loading ? "Saving to Database..." : "💾 Save to Database"}
+                  </Button>
+                </div>
+
                 {/* Events by Date */}
                 <div>
                   <h4 className="font-medium text-gray-900 mb-3">Daily Schedule</h4>
@@ -520,6 +593,78 @@ export default function PromptTestPage() {
             ) : (
               <div className="bg-red-50 border border-red-200 rounded p-3">
                 <p className="text-red-800 text-sm font-medium">Failed to generate schedule</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Save Response Section */}
+      {saveResponse && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              {saveResponse.success ? (
+                <>
+                  ✅ Saved to Database
+                  <Badge variant="default" className="bg-green-100 text-green-800">Success</Badge>
+                </>
+              ) : (
+                <>
+                  ❌ Save Failed
+                  <Badge variant="destructive">Error</Badge>
+                </>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {saveResponse.success ? (
+              <div className="space-y-4">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <p className="text-green-800 font-medium mb-2">{saveResponse.message}</p>
+                  {saveResponse.prescriptionId && (
+                    <div className="text-sm text-green-700">
+                      <strong>Prescription ID:</strong> 
+                      <code className="ml-1 px-2 py-1 bg-green-100 rounded">{saveResponse.prescriptionId}</code>
+                    </div>
+                  )}
+                </div>
+                
+                {saveResponse.metadata && (
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h4 className="font-medium text-gray-900 mb-3">Stored Data Summary</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <div className="text-gray-600">Medications:</div>
+                        <div className="font-mono font-semibold text-blue-700">{saveResponse.metadata.medicationsCount}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-600">Activities:</div>
+                        <div className="font-mono font-semibold text-green-700">{saveResponse.metadata.activitiesCount}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-600">Schedule Events:</div>
+                        <div className="font-mono font-semibold text-purple-700">{saveResponse.metadata.scheduleEventsCount}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-600">AI Provider:</div>
+                        <div className="font-mono font-semibold">{saveResponse.metadata.provider.toUpperCase()}</div>
+                      </div>
+                    </div>
+                    <div className="mt-3 text-xs text-gray-600">
+                      Saved at: {new Date(saveResponse.metadata.timestamp).toLocaleString()}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-blue-800 text-sm">✨ Your parsed prescription and schedule data has been successfully stored in the Supabase database and can now be viewed in the Appointments & Schedule section.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-red-800 text-sm font-medium mb-2">Failed to save to database:</p>
+                <p className="text-red-700 text-sm">{saveResponse.error}</p>
               </div>
             )}
           </CardContent>

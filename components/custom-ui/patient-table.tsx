@@ -4,8 +4,20 @@ import { Button } from "../ui/button";
 
 interface Patient {
     id: string;
-    phone_number: string;
-    emergency_contact: string;
+    date_of_birth?: string;
+    gender?: string;
+    phone_number?: string;
+    medical_history?: {
+        surgeries: string[];
+        conditions: string[];
+    };
+    allergies?: {
+        food: string[];
+        medications: string[];
+    };
+    emergency_contact?: string;
+    is_active?: boolean;
+    // Add other fields as needed
 }
 
 export default function PatientTable() {
@@ -78,6 +90,7 @@ export default function PatientTable() {
                 setPatientsData(mergedPatients);
             } catch (error) {
                 console.error("Error fetching patients:", error);
+                setPatientsData([]);
             }
         };
 
