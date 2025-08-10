@@ -4,20 +4,9 @@ import { Button } from "../ui/button";
 
 interface Patient {
     id: string;
-    date_of_birth?: string;
-    gender?: string;
     phone_number?: string;
-    medical_history?: {
-        surgeries: string[];
-        conditions: string[];
-    };
-    allergies?: {
-        food: string[];
-        medications: string[];
-    };
     emergency_contact?: string;
-    is_active?: boolean;
-    // Add other fields as needed
+    isreviewed?: boolean; // We'll store review status too
 }
 
 export default function PatientTable() {
@@ -31,6 +20,7 @@ export default function PatientTable() {
                 const apiKey =
                     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY || "";
 
+                // 1. Fetch review documents
                 const reviewRes = await fetch(
                     `${apiBase}/rest/v1/reviewdocuments?select=*`,
                     {
@@ -43,30 +33,21 @@ export default function PatientTable() {
                 if (!reviewRes.ok) throw new Error("Failed to fetch review docs");
                 const reviewData = await reviewRes.json();
 
-                // Filter only reviewed = true and extract patientIds from content
-                const reviewedPatientsIds = reviewData
-                    .filter((doc: any) => doc.isreviewed === true)
-                    .map((doc: any) => {
-                        let patientId = null;
-                        try {
-                            if (typeof doc.content === "string") {
-                                const parsed = JSON.parse(doc.content);
-                                patientId = parsed.patientId || parsed.content?.patientId;
-                            } else if (typeof doc.content === "object" && doc.content !== null) {
-                                patientId = doc.content.patientId;
-                            }
-                        } catch {
-                            // if parsing fails, skip
-                        }
-                        return patientId;
-                    })
-                    .filter((id: string | null) => id !== null);
+                // 2. Extract all patient IDs and keep review status
+                const reviewMap = reviewData.reduce((acc: any, doc: any) => {
+                    if (doc.patientid) {
+                        acc[doc.patientid] = doc.isreviewed;
+                    }
+                    return acc;
+                }, {});
 
-                if (reviewedPatientsIds.length === 0) {
+                const allPatientIds = Object.keys(reviewMap);
+                if (allPatientIds.length === 0) {
                     setPatientsData([]);
                     return;
                 }
 
+                // 3. Fetch patients
                 const patientRes = await fetch(
                     `${apiBase}/rest/v1/patients?select=*`,
                     {
@@ -79,12 +60,14 @@ export default function PatientTable() {
                 if (!patientRes.ok) throw new Error("Failed to fetch patients");
                 const patientData = await patientRes.json();
 
+                // 4. Merge data
                 const mergedPatients = patientData
-                    .filter((p: any) => reviewedPatientsIds.includes(p.id))
+                    .filter((p: any) => allPatientIds.includes(p.id))
                     .map((p: any) => ({
                         id: p.id,
                         phone_number: p.phone_number || "-",
                         emergency_contact: p.emergency_contact || "-",
+                        isreviewed: reviewMap[p.id],
                     }));
 
                 setPatientsData(mergedPatients);
@@ -138,8 +121,7 @@ export default function PatientTable() {
                             <td className="border border-gray-300 px-4 py-2">{patient.emergency_contact}</td>
                             <td className="border border-gray-300 px-4 py-2">
                                 <Button
-                                    // onClick={() => handleReviewClick(patient.id)}
-                                    onClick={() => handleReviewClick('75359118-03ce-47f9-88fe-58258d091e81')}
+                                    onClick={() => handleReviewClick(patient.id)}
                                     className="bg-blue-600 hover:bg-blue-700 transition text-white"
                                 >
                                     Review
@@ -149,7 +131,7 @@ export default function PatientTable() {
                     ))}
                     {filteredPatients.length === 0 && (
                         <tr>
-                            <td colSpan={4} className="text-center py-4 text-gray-500">
+                            <td colSpan={5} className="text-center py-4 text-gray-500">
                                 No patients found
                             </td>
                         </tr>
