@@ -5,18 +5,18 @@ import { Button } from "../ui/button";
 
 interface Patient {
     id: string;
-    date_of_birth: string;
-    gender: string;
-    phone_number: string;
-    medical_history: {
+    date_of_birth?: string;
+    gender?: string;
+    phone_number?: string;
+    medical_history?: {
         surgeries: string[];
         conditions: string[];
     };
-    allergies: {
+    allergies?: {
         food: string[];
         medications: string[];
     };
-    is_active: boolean;
+    is_active?: boolean;
     // Add other fields as needed
 }
 
@@ -27,12 +27,35 @@ export default function PatientTable() {
     useEffect(() => {
         const fetchPatients = async () => {
             try {
-                const res = await axios.get(
-                    "/api/patients/?doctorId=e152c25d-db65-40d8-8f25-8bf8ee5fa92b"
-                );
-                setPatientsData(res.data.data || []);
+                // First try to fetch from external Supabase API
+                let res;
+                try {
+                    res = await axios.get("/api/external-patients");
+                    console.log("External patient API response:", res.data);
+                } catch (externalError) {
+                    console.warn("External API failed, falling back to local API:", externalError);
+                    // Fallback to local API
+                    res = await axios.get("/api/patients/?doctorId=660e8400-e29b-41d4-a716-446655440001");
+                    console.log("Local patient API response:", res.data);
+                }
+                
+                // Parse the response data
+                let patientList = [];
+                if (Array.isArray(res.data)) {
+                    patientList = res.data;
+                } else if (res.data && Array.isArray(res.data.patients)) {
+                    patientList = res.data.patients;
+                } else if (res.data && Array.isArray(res.data.data)) {
+                    patientList = res.data.data;
+                } else {
+                    console.error("Unexpected data format from patient API:", res.data);
+                    patientList = [];
+                }
+                
+                setPatientsData(patientList);
             } catch (error) {
                 console.error("Error fetching patients:", error);
+                setPatientsData([]);
             }
         };
         fetchPatients();
@@ -76,14 +99,14 @@ export default function PatientTable() {
                 <tbody>
                     {filteredPatients.map((patient) => (
                         <tr key={patient.id} className="hover:bg-gray-50">
-                            <td className="border border-gray-300 px-4 py-2">{patient.phone_number}</td>
-                            <td className="border border-gray-300 px-4 py-2">{patient.gender}</td>
-                            <td className="border border-gray-300 px-4 py-2">{patient.date_of_birth}</td>
+                            <td className="border border-gray-300 px-4 py-2">{patient.phone_number || "N/A"}</td>
+                            <td className="border border-gray-300 px-4 py-2">{patient.gender || "N/A"}</td>
+                            <td className="border border-gray-300 px-4 py-2">{patient.date_of_birth || "N/A"}</td>
                             <td className="border border-gray-300 px-4 py-2">
-                                {patient.medical_history.surgeries.join(", ")}
+                                {patient.medical_history?.surgeries ? patient.medical_history.surgeries.join(", ") : "N/A"}
                             </td>
                             <td className="border border-gray-300 px-4 py-2">
-                                {patient.medical_history.conditions.join(", ")}
+                                {patient.medical_history?.conditions ? patient.medical_history.conditions.join(", ") : "N/A"}
                             </td>
                             <td className="border border-gray-300 px-4 py-2">
                                 <Button

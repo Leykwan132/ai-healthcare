@@ -14,10 +14,17 @@ export async function GET(request: Request) {
         }
 
         const supabase = await createClient();
+        
+        // Join patients with conversations to get patients for a specific doctor
         const { data: patients, error } = await supabase
             .from('patients')
-            .select('*')
-            .eq('doctorId', doctorId)
+            .select(`
+                *,
+                conversations!inner(
+                    doctor_id
+                )
+            `)
+            .eq('conversations.doctor_id', doctorId)
             .order('created_at', { ascending: false });
 
         if (error) {
