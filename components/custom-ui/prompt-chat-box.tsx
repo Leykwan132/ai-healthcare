@@ -15,20 +15,48 @@ export function PromptChatBox() {
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const samplePrescriptions = [
+    "Take 1 tablet of Amlodipine 5mg once daily in the morning. Light exercise 30 minutes daily.",
+    "Ventolin inhaler 2 puffs as needed for asthma. Flixotide 250mcg inhaler twice daily morning and evening. Avoid dust and smoke.",
+    "Simvastatin 20mg once daily in the evening with food. Walking exercise 45 minutes daily. Follow up in 2 weeks.",
+    "Novorapid insulin 10 units before breakfast and dinner. Metformin 1000mg twice daily with meals. Check blood sugar daily.",
+    "Take Paracetamol 500mg three times daily for 5 days. Rest and drink plenty of fluids."
+  ];
+
+  // Helper: filter out suggestions exactly matching input (case insensitive)
+  const filterExactMatch = (list: string[]) =>
+    list.filter(
+      (s) => s.toLowerCase() !== input.trim().toLowerCase()
+    );
+
+  // Filter samplePrescriptions based on input (case insensitive)
+  const filteredLocalSuggestions = input.trim()
+    ? filterExactMatch(
+      samplePrescriptions.filter(p =>
+        p.toLowerCase().includes(input.toLowerCase())
+      )
+    )
+    : filterExactMatch(samplePrescriptions); // show all except exact match if input empty
+
+  // Debounced API call for suggestions
   useEffect(() => {
     if (!input.trim()) {
       setSuggestions([]);
+      setLoading(false);
       return;
     }
 
+    setLoading(true);
+
     const debounce = setTimeout(() => {
-      setLoading(true);
       axios
         .get(`/api/suggestions?query=${encodeURIComponent(input)}`)
         .then((res) => {
-          setSuggestions(res.data.suggestions || []);
+          const apiSugs = res.data.suggestions || [];
+          setSuggestions(filterExactMatch(apiSugs));
         })
         .catch(() => {
           setSuggestions([]);
@@ -44,7 +72,7 @@ export function PromptChatBox() {
   // Auto grow textarea height based on scrollHeight
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"; // reset height to auto to recalc
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [input]);
@@ -66,6 +94,16 @@ export function PromptChatBox() {
     }
   };
 
+  // Determine which suggestions to show:
+  // if loading, show filtered local suggestions (already filtered for exact matches)
+  // else show API suggestions (filtered) or fallback to filtered local suggestions
+  const showSuggestions =
+    isFocused
+      ? (loading
+        ? filteredLocalSuggestions
+        : (suggestions.length > 0 ? suggestions : filteredLocalSuggestions))
+      : [];
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -78,6 +116,10 @@ export function PromptChatBox() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => {
+              setTimeout(() => setIsFocused(false), 150);
+            }}
             placeholder="Type your message..."
             rows={1}
             className="resize-none w-full rounded-md border border-gray-300 p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-hidden"
@@ -94,21 +136,22 @@ export function PromptChatBox() {
           </button>
         </div>
 
-        {loading && (
-          <p className="text-xs text-muted-foreground mt-1">
-            Loading suggestions...
-          </p>
-        )}
-
-        {suggestions.length > 0 && (
-          <div className="mt-2 p-2 border rounded bg-muted text-sm">
-            <p className="text-muted-foreground mb-1">Suggestions:</p>
-            <ul className="list-disc list-inside space-y-1">
-              {suggestions.map((s, i) => (
+        {showSuggestions.length > 0 && (
+          <div
+            className="mt-2 p-2 border rounded bg-muted text-sm max-h-48 overflow-y-auto shadow-md"
+            role="listbox"
+          >
+            <ul className="list-none space-y-1">
+              {showSuggestions.map((s, i) => (
                 <li
                   key={i}
-                  className="cursor-pointer hover:underline"
-                  onClick={() => setInput(s)}
+                  role="option"
+                  tabIndex={-1}
+                  className="cursor-pointer rounded px-2 py-1 hover:bg-blue-200"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    setInput(s);
+                  }}
                 >
                   {s}
                 </li>

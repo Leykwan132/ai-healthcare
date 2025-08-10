@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { Button } from "../ui/button";
 
 interface FollowUpPageProps {
     params: { id: string };
@@ -75,12 +76,12 @@ export default function FollowUpPage({ params }: FollowUpPageProps) {
                 <h1 className="text-2xl font-bold">
                     Patient Review - {patient.patientName}
                 </h1>
-                <button
+                <Button
                     onClick={exportPDF}
-                    className="bg-blue-600  hover:bg-blue-700 transition px-4 py-2 rounded-xl text-lg shadow-lg text-white"
+                    className="bg-blue-600  hover:bg-blue-700 transition text-white"
                 >
                     Export
-                </button>
+                </Button>
             </div>
 
             {/* Table */}
@@ -103,18 +104,18 @@ export default function FollowUpPage({ params }: FollowUpPageProps) {
 
             {/* Positive / Negative buttons */}
             <div className="flex gap-4 justify-end">
-                <button
-                    className="bg-green-600 hover:bg-green-700 transition px-4 py-2 rounded-xl text-lg shadow-lg text-white"
+                <Button
                     onClick={() => handleOpenModal("positive")}
+                    className="bg-green-600 hover:bg-green-700 transition text-white"
                 >
                     Positive
-                </button>
-                <button
-                    className="bg-red-600 hover:bg-red-700 transition px-4 py-2 rounded-xl text-lg shadow-lg text-white"
-                    onClick={() => handleOpenModal("negative")}
+                </Button>
+                <Button
+                    onClick={() => handleOpenModal("positive")}
+                    className="bg-red-600 hover:bg-red-700 transition text-white"
                 >
                     Negative
-                </button>
+                </Button>
             </div>
 
             {/* Confirmation Modal */}
@@ -127,21 +128,18 @@ export default function FollowUpPage({ params }: FollowUpPageProps) {
                             <span className="font-bold capitalize">{selectedStatus}</span>?
                         </p>
                         <div className="flex justify-end gap-4">
-                            <button
+                            <Button
                                 onClick={handleConfirm}
-                                className={`px-4 py-2 rounded-xl text-white ${selectedStatus === "positive"
-                                    ? "bg-green-600 hover:bg-green-700"
-                                    : "bg-red-600 hover:bg-red-700"
-                                    }`}
+                                className="bg-blue-600  hover:bg-blue-700 transition text-white"
                             >
                                 Confirm
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                                 onClick={handleCancel}
-                                className="px-4 py-2 rounded-xl border border-gray-300 hover:bg-gray-100"
+                                className="bg-gray-700  hover:bg-gray-300 transition text-white"
                             >
                                 Cancel
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
+import { Button } from "../ui/button";
 
 interface Patient {
     id: string;
@@ -85,12 +86,12 @@ export default function PatientTable() {
                                 {patient.medical_history.conditions.join(", ")}
                             </td>
                             <td className="border border-gray-300 px-4 py-2">
-                                <button
+                                <Button
                                     onClick={() => handleReviewClick(patient.id)}
-                                    className="px-3 py-1 rounded-xl bg-blue-500 text-white hover:bg-blue-600"
+                                    className="bg-blue-600  hover:bg-blue-700 transition text-white"
                                 >
                                     Review
-                                </button>
+                                </Button>
                             </td>
                         </tr>
                     ))}
