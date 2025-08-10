@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import jsPDF from "jspdf";
+import { useRouter } from "next/navigation";
 import autoTable from "jspdf-autotable";
 import { Button } from "../ui/button";
 
@@ -32,7 +33,10 @@ export default function FollowUpPage({ params }: FollowUpPageProps) {
     const [error, setError] = useState<string | null>(null);
 
     const [showModal, setShowModal] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState<"positive" | "negative" | null>(null);
+
+    const router = useRouter();
 
     // Fetch patient data from API
     useEffect(() => {
@@ -101,7 +105,7 @@ export default function FollowUpPage({ params }: FollowUpPageProps) {
         if (!patient) return;
 
         const doc = new jsPDF();
-        doc.text(`Patient Review - ${patient.patientName}`, 14, 10);
+        doc.text(`Patient ID: ${patient.id}`, 14, 10);
 
         const tableData = patient.questions.map((s) => [s.question, s.answer]);
 
@@ -123,14 +127,18 @@ export default function FollowUpPage({ params }: FollowUpPageProps) {
         if (!selectedStatus || !patient) return;
 
         try {
-            alert(`Patient marked as ${selectedStatus} successfully!`);
+            setShowSuccess(true); // Show success popup
         } catch (error) {
-            alert("Failed to mark patient status.");
             console.error(error);
         } finally {
             setShowModal(false);
             setSelectedStatus(null);
         }
+    };
+
+    const handleOk = () => {
+        setShowSuccess(false);
+        router.push("/doctors/patient-table"); // Redirect
     };
 
     const handleCancel = () => {
@@ -146,7 +154,7 @@ export default function FollowUpPage({ params }: FollowUpPageProps) {
         <div className="p-6 space-y-6 relative">
             {/* Title and Export button */}
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">Patient Review - {patient.patientName}</h1>
+                <h1 className="text-2xl font-bold">Patient ID: {patient.id}</h1>
                 <Button
                     onClick={exportPDF}
                     className="bg-blue-600 hover:bg-blue-700 transition text-white"
@@ -215,6 +223,26 @@ export default function FollowUpPage({ params }: FollowUpPageProps) {
                     </div>
                 </div>
             )}
+
+            {/* Success Popup */}
+            {showSuccess && (
+                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 max-w-sm w-full shadow-lg text-center">
+                        <h2 className="text-lg font-semibold mb-4">Success</h2>
+                        <p className="mb-6">
+                            Patient follow up status updated successfully!
+                        </p>
+                        <Button
+                            onClick={handleOk}
+                            className="bg-green-600 hover:bg-green-700 transition text-white w-full py-3 text-lg"
+                        >
+                            OK
+                        </Button>
+                    </div>
+                </div>
+            )}
+
+
         </div>
     );
 }

@@ -1,23 +1,11 @@
 "use client";
 import React, { useState, useMemo, useEffect } from "react";
-import axios from "axios";
 import { Button } from "../ui/button";
 
 interface Patient {
     id: string;
-    date_of_birth: string;
-    gender: string;
     phone_number: string;
-    medical_history: {
-        surgeries: string[];
-        conditions: string[];
-    };
-    allergies: {
-        food: string[];
-        medications: string[];
-    };
-    is_active: boolean;
-    // Add other fields as needed
+    emergency_contact: string;
 }
 
 export default function PatientTable() {
@@ -27,14 +15,72 @@ export default function PatientTable() {
     useEffect(() => {
         const fetchPatients = async () => {
             try {
-                const res = await axios.get(
-                    "/api/patients/?doctorId=e152c25d-db65-40d8-8f25-8bf8ee5fa92b"
+                const apiBase = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+                const apiKey =
+                    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY || "";
+
+                const reviewRes = await fetch(
+                    `${apiBase}/rest/v1/reviewdocuments?select=*`,
+                    {
+                        headers: {
+                            apikey: apiKey,
+                            Authorization: `Bearer ${apiKey}`,
+                        },
+                    }
                 );
-                setPatientsData(res.data.data || []);
+                if (!reviewRes.ok) throw new Error("Failed to fetch review docs");
+                const reviewData = await reviewRes.json();
+
+                // Filter only reviewed = true and extract patientIds from content
+                const reviewedPatientsIds = reviewData
+                    .filter((doc: any) => doc.isreviewed === true)
+                    .map((doc: any) => {
+                        let patientId = null;
+                        try {
+                            if (typeof doc.content === "string") {
+                                const parsed = JSON.parse(doc.content);
+                                patientId = parsed.patientId || parsed.content?.patientId;
+                            } else if (typeof doc.content === "object" && doc.content !== null) {
+                                patientId = doc.content.patientId;
+                            }
+                        } catch {
+                            // if parsing fails, skip
+                        }
+                        return patientId;
+                    })
+                    .filter((id: string | null) => id !== null);
+
+                if (reviewedPatientsIds.length === 0) {
+                    setPatientsData([]);
+                    return;
+                }
+
+                const patientRes = await fetch(
+                    `${apiBase}/rest/v1/patients?select=*`,
+                    {
+                        headers: {
+                            apikey: apiKey,
+                            Authorization: `Bearer ${apiKey}`,
+                        },
+                    }
+                );
+                if (!patientRes.ok) throw new Error("Failed to fetch patients");
+                const patientData = await patientRes.json();
+
+                const mergedPatients = patientData
+                    .filter((p: any) => reviewedPatientsIds.includes(p.id))
+                    .map((p: any) => ({
+                        id: p.id,
+                        phone_number: p.phone_number || "-",
+                        emergency_contact: p.emergency_contact || "-",
+                    }));
+
+                setPatientsData(mergedPatients);
             } catch (error) {
                 console.error("Error fetching patients:", error);
             }
         };
+
         fetchPatients();
     }, []);
 
@@ -46,8 +92,8 @@ export default function PatientTable() {
         );
     }, [search, patientsData]);
 
-    const handleReviewClick = (id: string) => {
-        window.open(`/doctors/review/${id}`, "_blank");
+    const handleReviewClick = (patient_id: string) => {
+        window.open(`/doctors/review/${patient_id}`, "_blank");
     };
 
     return (
@@ -65,30 +111,23 @@ export default function PatientTable() {
             <table className="w-full border-collapse border border-gray-300">
                 <thead>
                     <tr>
+                        <th className="border border-gray-300 px-4 py-2">Patient ID</th>
                         <th className="border border-gray-300 px-4 py-2">Phone Number</th>
-                        <th className="border border-gray-300 px-4 py-2">Gender</th>
-                        <th className="border border-gray-300 px-4 py-2">DOB</th>
-                        <th className="border border-gray-300 px-4 py-2">Surgeries</th>
-                        <th className="border border-gray-300 px-4 py-2">Conditions</th>
+                        <th className="border border-gray-300 px-4 py-2">Emergency Contact</th>
                         <th className="border border-gray-300 px-4 py-2">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {filteredPatients.map((patient) => (
                         <tr key={patient.id} className="hover:bg-gray-50">
+                            <td className="border border-gray-300 px-4 py-2">{patient.id}</td>
                             <td className="border border-gray-300 px-4 py-2">{patient.phone_number}</td>
-                            <td className="border border-gray-300 px-4 py-2">{patient.gender}</td>
-                            <td className="border border-gray-300 px-4 py-2">{patient.date_of_birth}</td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {patient.medical_history.surgeries.join(", ")}
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {patient.medical_history.conditions.join(", ")}
-                            </td>
+                            <td className="border border-gray-300 px-4 py-2">{patient.emergency_contact}</td>
                             <td className="border border-gray-300 px-4 py-2">
                                 <Button
-                                    onClick={() => handleReviewClick(patient.id)}
-                                    className="bg-blue-600  hover:bg-blue-700 transition text-white"
+                                    // onClick={() => handleReviewClick(patient.id)}
+                                    onClick={() => handleReviewClick('75359118-03ce-47f9-88fe-58258d091e81')}
+                                    className="bg-blue-600 hover:bg-blue-700 transition text-white"
                                 >
                                     Review
                                 </Button>
@@ -97,7 +136,7 @@ export default function PatientTable() {
                     ))}
                     {filteredPatients.length === 0 && (
                         <tr>
-                            <td colSpan={6} className="text-center py-4 text-gray-500">
+                            <td colSpan={4} className="text-center py-4 text-gray-500">
                                 No patients found
                             </td>
                         </tr>

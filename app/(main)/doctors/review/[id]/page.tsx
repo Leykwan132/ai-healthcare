@@ -11,7 +11,7 @@ export default async function PatientReviewForm({ params }: ReviewPageProps) {
     return (
         <main className="p-8 pt-24">
             <h1 className="text-3xl font-bold mb-6">
-                Review patient who completed prescription
+                Review patient prescription
             </h1>
             <FollowUpPage params={{ id: awaitedParams.id }} />
         </main>
