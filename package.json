@@ -25,6 +25,7 @@
     "dotenv": "^17.2.1",
     "jspdf": "^3.0.1",
     "jspdf-autotable": "^5.0.2",
+    "livekit-client": "^2.15.4",
     "livekit-server-sdk": "^2.13.1",
     "lucide-react": "^0.511.0",
     "moment": "^2.30.1",

@@ -43,17 +43,17 @@ export function LoginButton() {
 
       <DropdownMenuContent align="end" className="w-32">
         <DropdownMenuItem onClick={switchToDoctor}>
-          Doctor
+          Doctor View
         </DropdownMenuItem>
         <DropdownMenuItem onClick={switchToPatient}>
-          Patient
+          Patient View
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={goToLoginForm}>
+          Log In
         </DropdownMenuItem>
         <DropdownMenuItem onClick={goToLandingPage}>
           Landing Page
         </DropdownMenuItem>
-        {/* <DropdownMenuItem onClick={goToLoginForm}>
-          Login
-        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );

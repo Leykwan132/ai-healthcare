@@ -74,7 +74,7 @@ export function CalendarView({
       const calendarEvents = schedulesData?.map((schedule) => {
         const startDate = new Date(schedule.startdate);
         const endDate = new Date(schedule.enddate);
-        
+
         return {
           id: schedule.id,
           title: schedule.title,
@@ -119,7 +119,7 @@ export function CalendarView({
     };
 
     window.addEventListener('treatmentPlanSaved', handleTreatmentPlanSaved as EventListener);
-    
+
     return () => {
       window.removeEventListener('treatmentPlanSaved', handleTreatmentPlanSaved as EventListener);
     };
@@ -142,10 +142,6 @@ export function CalendarView({
   return (
     <>
       <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Calendar</CardTitle>
-          <CardDescription>Manage patients' schedule</CardDescription>
-        </CardHeader>
         <CardContent>
           <div className="h-[600px]">
             {loading ? (
@@ -172,7 +168,7 @@ export function CalendarView({
                 eventPropGetter={(event) => {
                   const isLogged = effectivePatientLogs[event.id]?.isLogged && effectivePatientLogs[event.id]?.photo;
                   let backgroundColor = '#3b82f6'; // Default blue
-                  
+
                   // Color code by event type
                   if (event.type === 'medication') {
                     backgroundColor = isLogged ? '#22c55e' : '#3b82f6'; // Green if logged, blue otherwise
@@ -181,7 +177,7 @@ export function CalendarView({
                   } else if (event.type === 'followup') {
                     backgroundColor = isLogged ? '#22c55e' : '#8b5cf6'; // Green if logged, purple otherwise
                   }
-                  
+
                   return {
                     style: {
                       backgroundColor,
