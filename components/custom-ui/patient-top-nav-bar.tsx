@@ -15,7 +15,7 @@ export async function PatientTopNavBar() {
       <div className="flex justify-between items-center h-16 px-4">
 
         {/* Logo */}
-        <Link href="/patients/dashboard" className="flex items-center space-x-2">
+        <Link href="/" className="flex items-center space-x-2">
           <img src="/Vertica.gif" alt="Logo" className="h-11 w-11 rounded-full object-cover" />
           <span className="font-semibold">MediBuddyAI</span>
         </Link>
