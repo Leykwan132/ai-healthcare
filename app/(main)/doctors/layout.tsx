@@ -7,10 +7,21 @@ export default function DoctorLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="flex">
+        <div className="flex flex-col min-h-screen">
             <DoctorTopNavBar />
-            <DoctorSidebar />
-            <main className="flex-1 ml-64 p-6">{children}</main>
+            <div className="flex flex-1">
+                <DoctorSidebar />
+                <main
+                    className="
+                        flex-1
+                        p-4 md:p-6
+                        transition-all duration-300 ease-in-out
+                        md:ml-64
+                    "
+                >
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }
