@@ -51,9 +51,9 @@ export function LoginButton() {
         <DropdownMenuItem onClick={goToLoginForm}>
           Log In
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={goToLandingPage}>
+        {/* <DropdownMenuItem onClick={goToLandingPage}>
           Landing Page
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );
