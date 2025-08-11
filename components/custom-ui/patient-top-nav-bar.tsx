@@ -21,7 +21,7 @@ export async function PatientTopNavBar() {
         </Link>
 
         {/* Right section (shifted for sidebar space) */}
-        <div className="flex items-center gap-4 pr-4" style={{ paddingLeft: "200px" }}>
+        <div className="flex items-center gap-3 flex-shrink-0">
           {user ? (
             <>
               <span className="text-sm">{user.email}</span>
