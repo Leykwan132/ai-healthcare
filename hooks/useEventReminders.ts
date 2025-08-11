@@ -11,38 +11,44 @@ export function useEventReminders({ events, onReminderTriggered }: UseEventRemin
   const [activeReminder, setActiveReminder] = useState<any>(null);
   const [snoozedEvents, setSnoozedEvents] = useState<Record<number, Date>>({});
   const [completedEvents, setCompletedEvents] = useState<Set<number>>(new Set());
+  const [dismissedEvents, setDismissedEvents] = useState<Set<number>>(new Set());
+  const [hasShownReminder, setHasShownReminder] = useState(false);
 
-  const checkForDueEvents = useCallback(() => {
+    const checkForDueEvents = useCallback(() => {
+    // For demo: only show one reminder per session
+    if (hasShownReminder) {
+      return;
+    }
+
     const now = new Date();
-    const currentTime = now.getTime();
     
-    // Check each event
-    for (const event of events) {
-      const eventTime = new Date(event.start).getTime();
-      const eventId = event.id;
-      
-      // Skip if already completed
-      if (completedEvents.has(eventId)) continue;
+    // Find the first available event that hasn't been dismissed or completed
+    const dueEvent = events.find(event => {
+      if (dismissedEvents.has(event.id) || completedEvents.has(event.id)) {
+        return false;
+      }
       
       // Check if event is snoozed
-      const snoozeUntil = snoozedEvents[eventId];
-      if (snoozeUntil && now < snoozeUntil) continue;
-      
-      // Check if event time has arrived (within 1 minute tolerance)
-      const timeDiff = currentTime - eventTime;
-      if (timeDiff >= 0 && timeDiff <= 60000) { // 1 minute tolerance
-        setActiveReminder(event);
-        onReminderTriggered?.(event);
-        break; // Only show one reminder at a time
+      const snoozeUntil = snoozedEvents[event.id];
+      if (snoozeUntil && now < snoozeUntil) {
+        return false;
       }
-    }
-  }, [events, snoozedEvents, completedEvents, onReminderTriggered]);
+      
+      return true; // For demo: any event can trigger
+    });
 
-  // Check for due events every 30 seconds
+    if (dueEvent && !activeReminder) {
+      setActiveReminder(dueEvent);
+      setHasShownReminder(true); // Mark that we've shown a reminder
+      onReminderTriggered?.(dueEvent);
+    }
+  }, [events, snoozedEvents, completedEvents, dismissedEvents, activeReminder, onReminderTriggered, hasShownReminder]);
+
+  // Check for due events every 5 seconds for demo responsiveness
   useEffect(() => {
-    const interval = setInterval(checkForDueEvents, 30000);
+    const interval = setInterval(checkForDueEvents, 5000);
     
-    // Also check immediately
+    // Also check immediately when events change
     checkForDueEvents();
     
     return () => clearInterval(interval);
@@ -63,8 +69,11 @@ export function useEventReminders({ events, onReminderTriggered }: UseEventRemin
   }, []);
 
   const dismissReminder = useCallback(() => {
+    if (activeReminder) {
+      setDismissedEvents(prev => new Set(prev).add(activeReminder.id));
+    }
     setActiveReminder(null);
-  }, []);
+  }, [activeReminder]);
 
   return {
     activeReminder,
