@@ -1,105 +1,86 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# MediBuddyAI
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+**Transforming Healthcare with AI Intelligence**
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+MediBuddyAI is a beta-stage healthcare platform, developed as a **hackathon project**, designed to empower both healthcare professionals and patients with AI-driven insights, streamlined workflows, and intelligent care management—all wrapped in enterprise-grade privacy and reliability.
+
+---
+
+##  Table of Contents
+
+- [Overview](#overview)  
+- [Features](#features)  
+  - [For Healthcare Providers](#for-healthcare-providers)  
+  - [For Patients](#for-patients)  
+- [Why MediBuddyAI?](#why-medibuddyai)  
+- [Getting Started (Beta)](#getting-started-beta)  
+- [Status & Roadmap](#status--roadmap)  
+- [Acknowledgements](#acknowledgements)  
+
+---
+
+## Overview
+
+MediBuddyAI is a beta platform (2025 launch) that brings together AI-powered tools and user-friendly interfaces tailored to both doctors and patients. From clinical dashboards to patient health management systems, MediBuddyAI is built with privacy-first principles to elevate care delivery while maintaining trust and security.  
+
+> ⚡ **Note**: MediBuddyAI was built as part of a hackathon challenge.
+
+  🎥 Pitch Video: [Watch here](https://drive.google.com/file/d/1iev2jM8pZB7WYN-cRH8BM3xswjD8g7Ni)
+
+---
 
 ## Features
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+### For Healthcare Providers
+- **Doctor Dashboard**: Manage patients, medical documentation, and AI-assisted diagnostics from a unified interface.  
+- **Patient Management**: Access organized patient profiles, visit histories, and treatment plans.  
+- **AI-Powered Diagnostic Assistance**: Utilize intelligent recommendations to support clinical decision-making (beta functionality).
+<img src="./app/asset/doctor_dashbaord.png" width="600"/>  
 
-## Demo
+### For Patients
+- **Patient Dashboard**: View personal health records, upcoming appointments, and communicate with your care team seamlessly.  
+- **Appointment Management**: Request, view, and manage appointments with ease.  
+- **Record Access & Messaging**: Stay engaged with your healthcare journey through secure data access and communication tools.
+<img src="./app/asset/patient_dashbaord.png" width="600"/>  
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+---
 
-## Deploy to Vercel
+## Why MediBuddyAI?
 
-Vercel deployment will guide you through creating a Supabase account and project.
+- **Enterprise-Grade Security**: Designed with robust security protocols that meet industry standards—ensuring your data stays safe.  
+- **Privacy-First Architecture**: Built with privacy and compliance (such as HIPAA) in mind from the ground up.  
+- **Streamlined Team Workflows**: Tailored tools help clinicians, nurses, and healthcare staff manage tasks more efficiently.  
+- **AI-Driven Intelligence**: Gain smart assistance in documentation and diagnostic workflows to elevate the level of care.
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+<img src="./app/asset/main_menu.png" width="600"/>  
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+---
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+## Getting Started (Beta)
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+1. **Access the Platform**  
+   - Choose your role: [Doctor Portal] | [Patient Portal]
 
-## Clone and run locally
+2. **Sign Up / Log In**  
+   - Create or log into your account to begin exploring features.
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+3. **Explore Features**  
+   - Providers: Try clinical tools, patient dashboards, and AI diagnostics.  
+   - Patients: Manage appointments, communicate with providers, and explore records.
 
-2. Create a Next.js app using the Supabase Starter template npx command
+---
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+## Status & Roadmap
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+- **Current Version**: Beta (Active Development)  
+- **Launch Year**: 2025  
+- **Release Focus**: Ongoing improvements with new AI tools, expanded documentation, and staged public rollout.  
+- **Origin**: Built during a hackathon and currently being refined for broader use.  
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+---
 
-3. Use `cd` to change into the app's directory
+## Acknowledgements
 
-   ```bash
-   cd with-supabase-app
-   ```
+MediBuddyAI is proud to be shaping the future of digital healthcare.
 
-4. Rename `.env.example` to `.env.local` and update the following:
-
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
-
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
-
-5. You can now run the Next.js local development server:
-
-   ```bash
-   npm run dev
-   ```
-
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
-
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
-
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
-
-## Feedback and issues
-
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
-
-## More Supabase examples
-
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+---
