@@ -43,7 +43,7 @@ MediBuddyAI is a beta platform (2025 launch) that brings together AI-powered too
 - **Appointment Management**: Request, view, and manage appointments with ease.  
 - **Record Access & Messaging**: Stay engaged with your healthcare journey through secure data access and communication tools.
 
-![Patient Dashboard](https://github.com/Leykwan132/ai-healthcare/blob/main/app/assets/patient_dashbaord.png?raw=true)
+![Patient Dashboard](https://github.com/Leykwan132/ai-healthcare/blob/main/app/assets/patient_dashboard.png?raw=true)
 ---
 
 ## Why MediBuddyAI?
