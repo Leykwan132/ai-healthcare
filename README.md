@@ -35,14 +35,15 @@ MediBuddyAI is a beta platform (2025 launch) that brings together AI-powered too
 - **Doctor Dashboard**: Manage patients, medical documentation, and AI-assisted diagnostics from a unified interface.  
 - **Patient Management**: Access organized patient profiles, visit histories, and treatment plans.  
 - **AI-Powered Diagnostic Assistance**: Utilize intelligent recommendations to support clinical decision-making (beta functionality).
-<img src="./app/asset/doctor_dashbaord.png" width="600"/>  
+
+![Doctor Dashboard](https://github.com/Leykwan132/ai-healthcare/blob/main/app/assets/doctor_dashboard.png?raw=true)
 
 ### For Patients
 - **Patient Dashboard**: View personal health records, upcoming appointments, and communicate with your care team seamlessly.  
 - **Appointment Management**: Request, view, and manage appointments with ease.  
 - **Record Access & Messaging**: Stay engaged with your healthcare journey through secure data access and communication tools.
-<img src="./app/asset/patient_dashbaord.png" width="600"/>  
 
+![Patient Dashboard](https://github.com/Leykwan132/ai-healthcare/blob/main/app/assets/patient_dashbaord.png?raw=true)
 ---
 
 ## Why MediBuddyAI?
@@ -52,7 +53,7 @@ MediBuddyAI is a beta platform (2025 launch) that brings together AI-powered too
 - **Streamlined Team Workflows**: Tailored tools help clinicians, nurses, and healthcare staff manage tasks more efficiently.  
 - **AI-Driven Intelligence**: Gain smart assistance in documentation and diagnostic workflows to elevate the level of care.
 
-<img src="./app/asset/main_menu.png" width="600"/>  
+![Main menu](https://github.com/Leykwan132/ai-healthcare/blob/main/app/assets/main_menu.png?raw=true)
 
 ---
 
