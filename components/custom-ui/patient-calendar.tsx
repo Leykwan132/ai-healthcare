@@ -188,8 +188,8 @@ export function CalendarView({
 
   const handleReminderDismiss = () => {
     if (activeReminder) {
-      // Snooze for 5 minutes to prevent immediate retriggering
-      snoozeReminder(activeReminder.id, 5);
+      // Permanently dismiss this reminder
+      dismissReminder();
     }
   };
 

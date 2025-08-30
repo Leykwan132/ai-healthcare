@@ -24,6 +24,7 @@ export function ReminderPopup({
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [soundInterval, setSoundInterval] = useState<NodeJS.Timeout | null>(null);
+  const [activeOscillators, setActiveOscillators] = useState<OscillatorNode[]>([]);
 
   useEffect(() => {
     if (isOpen && event) {
@@ -74,6 +75,17 @@ export function ReminderPopup({
       setSoundInterval(null);
     }
     
+    // Stop all active oscillators immediately
+    activeOscillators.forEach(oscillator => {
+      try {
+        oscillator.stop();
+        oscillator.disconnect();
+      } catch (error) {
+        // Oscillator might already be stopped
+      }
+    });
+    setActiveOscillators([]);
+    
     // Close audio context
     if (audioContext && audioContext.state !== 'closed') {
       audioContext.close();
@@ -85,17 +97,16 @@ export function ReminderPopup({
     try {
       console.log('Playing notification sound...');
       
-      // Create a simple beep sound using Web Audio API
-      const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+      // Use existing audio context or create new one
+      let context = audioContext;
+      if (!context || context.state === 'closed') {
+        context = new (window.AudioContext || (window as any).webkitAudioContext)();
+        setAudioContext(context);
+      }
       
       // Resume audio context if it's suspended (browser requirement)
       if (context.state === 'suspended') {
         await context.resume();
-      }
-      
-      // Only update audioContext if it's not already set
-      if (!audioContext) {
-        setAudioContext(context);
       }
       
       const oscillator = context.createOscillator();
@@ -113,8 +124,16 @@ export function ReminderPopup({
       gainNode.gain.setValueAtTime(0.3, context.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.6);
       
+      // Track this oscillator so we can stop it later
+      setActiveOscillators(prev => [...prev, oscillator]);
+      
       oscillator.start(context.currentTime);
       oscillator.stop(context.currentTime + 0.6);
+      
+      // Remove oscillator from tracking after it ends
+      oscillator.onended = () => {
+        setActiveOscillators(prev => prev.filter(osc => osc !== oscillator));
+      };
       
       console.log('Sound playing...');
     } catch (error) {
